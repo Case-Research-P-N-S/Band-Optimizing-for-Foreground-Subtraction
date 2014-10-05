@@ -5,8 +5,12 @@ import numpy as np
 import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import "Linear Best Fit Function (LSR).py" as fit
-#import xList
+
+try:
+    import LinearBestFitFunction.py as fit
+except:
+    import site
+    site.addsitedir("https://raw.githubusercontent.com/Case-Research-P-N-S/Band-Optimizing-for-Foreground-Subtraction/master/LinearBestFitFunction.py")
 
 
 # ---------------------------------------------
