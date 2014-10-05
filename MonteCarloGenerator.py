@@ -6,11 +6,12 @@ import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-try:
-    import LinearBestFitFunction.py as fit
-except:
-    import site
-    site.addsitedir("https://raw.githubusercontent.com/Case-Research-P-N-S/Band-Optimizing-for-Foreground-Subtraction/master/LinearBestFitFunction.py")
+#try:
+import LinearBestFitFunction as fit
+# trying to import from website
+# except:
+#    import site as fit
+#    site.addsitedir("https://raw.githubusercontent.com/Case-Research-P-N-S/Band-Optimizing-for-Foreground-Subtraction/master/LinearBestFitFunction.py")
 
 
 # ---------------------------------------------
@@ -37,11 +38,28 @@ xList = [1,2,3,4,5]
 
 
 # assuming x's are constant, may later generate x's from a normal distribution
-for i in range(100):
+# how many times the Monte Carlo is repeated
+iterations = 100
+for i in range(iterations):
+    # generating yList
     yList = [aTrue + bTrue*x + np.random.normal(0, std) for x in xList]
+    # applying lines of best fit
     results = fit.linearFit(xList, yList)
+    # creating an aList, bList, and rSquareList for later analysis
     aList.append(results[0])
     bList.append(results[1])
     rSquareList.append(results[2])
 
-print "aTrue = %d, aAverage = %d\nbTrue = %d, bAverage = %d" % (aTrue, np.average(aList), bTrue, np.average(bList))
+aRange = len(aList)
+frequency = [0 for i in range(aRange)]
+# using (iterations/10) b/c generates more detailed histogram with more accurate Monte Carlo
+aStep = 10*aRange/iterations
+    
+for a in aList:
+    for i in range(0, aRange, aStep):
+        print i
+        if a < i:
+            frequency[i] += 1
+            
+print frequency
+plt.plot(bList, aList, "bo")
