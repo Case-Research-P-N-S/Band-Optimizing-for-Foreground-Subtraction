@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 
 
 '''
-    A function that takes in two lists of equal length corresponding the x-coords and y-coords of a graph and returns the a list with the intercept, slope and r^2 of the line of
-    best fit to that graph in that order
+    A function that takes in two lists of equal length corresponding
+    the x-coords and y-coords of a graph and returns the a list with
+    the intercept, slope and r^2 of the line of best fit to that
+    graph in that order
 '''
 
 def linearFit(xList, yList):
