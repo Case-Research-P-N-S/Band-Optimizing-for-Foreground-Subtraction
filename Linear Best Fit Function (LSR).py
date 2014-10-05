@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 '''
     A function that takes in two lists of equal length corresponding
-    the x-coords and y-coords of a graph and returns the a list with
+    the x-coords and y-coords of a graph and returns the a list containing
     the intercept, slope and r^2 of the line of best fit to that
-    graph in that order
+    graph respectively
 '''
 
 def linearFit(xList, yList):
@@ -25,7 +25,8 @@ def linearFit(xList, yList):
         raise Exception("Incompatible List length")
     
     #the degree =1 of the polynomial equation 
-    # given x-values, y-values, and relationship degree polyfit returns list of polynomial coefficients starting with coefficient with the highest power
+    ''' given x-values, y-values, and relationship degree, 
+    polyfit returns list of polynomial coefficients starting with coefficient with the highest power '''
     p = np.polyfit(xList, yList, 1)  
     b = p[0] # highest degree
     a = p[1] #lowest degree
