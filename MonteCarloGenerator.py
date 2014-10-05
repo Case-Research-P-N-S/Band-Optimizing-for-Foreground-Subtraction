@@ -5,7 +5,7 @@ import numpy as np
 import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import Linear Best Fit Function (LSR) as fit
+import "Linear Best Fit Function (LSR).py" as fit
 #import xList
 
 
