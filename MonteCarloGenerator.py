@@ -25,14 +25,23 @@ std = 1
 aTrue = 1
 bTrue = 1
 
+aList = []
+bList = []
+rSquareList = []
 
 # ------------------------------------------------
 # Creating Best Fit Line, storing, and reiterating.
 
-xList = [1,2,3,4,5]
-# Creating yList for using in linerFit function
-yList = [aTrue + bTrue*x + np.random.normal(x, std) for x in xList]
-# storing values
-resultsList = fit.linearFit(xList, yList)
 
-print resultsList
+xList = [1,2,3,4,5]
+
+
+# assuming x's are constant, may later generate x's from a normal distribution
+for i in range(100):
+    yList = [aTrue + bTrue*x + np.random.normal(0, std) for x in xList]
+    results = fit.linearFit(xList, yList)
+    aList.append(results[0])
+    bList.append(results[1])
+    rSquareList.append(results[2])
+
+print "aTrue = %d, aAverage = %d\nbTrue = %d, bAverage = %d" % (aTrue, np.average(aList), bTrue, np.average(bList))
