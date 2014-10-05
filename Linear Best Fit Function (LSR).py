@@ -25,8 +25,11 @@ def linearFit(xList, yList):
         raise Exception("Incompatible List length")
     
     #the degree =1 of the polynomial equation 
-    ''' given x-values, y-values, and relationship degree, 
-    polyfit returns list of polynomial coefficients starting with coefficient with the highest power '''
+    ''' 
+        given x-values, y-values, and relationship degree, 
+        polyfit returns list of polynomial coefficients 
+        starting with coefficient with the highest power 
+    '''
     p = np.polyfit(xList, yList, 1)  
     b = p[0] # highest degree
     a = p[1] #lowest degree
