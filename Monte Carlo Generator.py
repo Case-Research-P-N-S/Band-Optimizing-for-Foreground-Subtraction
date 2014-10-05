@@ -5,17 +5,14 @@ import numpy as np
 import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import "https://raw.githubusercontent.com/Case-Research-P-N-S/Band-Optimizing-for-Foreground-Subtraction/master/Linear%20Best%20Fit%20Function%20(LSR).py" as fit
-import xList
+import "Linear Best Fit Function (LSR).py" as fit
+#import xList
+
 
 # ---------------------------------------------
-# Finding a random integer for the Monte Carlo
-
-mean = 1
-# we think this is a function based off of the 
+# Finding a standard deviation value for the Monte Carlo 
+# it's probably a function. don't know yet
 std = 1
-# rndint creates the false data for the Monte Carlo
-rndInt = np.random.normal(mean, std)
 
 
 # ---------------------------------------------------
@@ -28,7 +25,10 @@ bTrue = 1
 # ------------------------------------------------
 # Creating Best Fit Line, storing, and reiterating.
 
+xList = [1,2,3,4,5]
 # Creating yList for using in linerFit function
-yList = [aTrue + bTrue*x + rndint for x in xList]
+yList = [aTrue + bTrue*x + np.random.normal(x, std) for x in xList]
 # storing values
-[a, b, rSquare] = fit.linearFit(xList, yList)
+resultsList = fit.linearFit(xList, yList)
+
+print resultsList
