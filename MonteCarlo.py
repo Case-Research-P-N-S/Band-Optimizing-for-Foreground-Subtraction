@@ -50,16 +50,6 @@ for i in range(iterations):
     bList.append(results[1])
     rSquareList.append(results[2])
 
-aRange = len(aList)
-frequency = [0 for i in range(aRange)]
-# using (iterations/10) b/c generates more detailed histogram with more accurate Monte Carlo
-aStep = 10*aRange/iterations
-    
-for a in aList:
-    for i in range(0, aRange, aStep):
-        print i
-        if a < i:
-            frequency[i] += 1
-            
-print frequency
-plt.plot(bList, aList, "bo")
+histoData = np.histogram(aList)
+
+plt.plot(histoData[1][0:-1], histoData[0], 'bo')
