@@ -39,7 +39,7 @@ xList = [1,2,3,4,5]
 
 # assuming x's are constant, may later generate x's from a normal distribution
 # how many times the Monte Carlo is repeated
-iterations = 100
+iterations = 1000
 for i in range(iterations):
     # generating yList
     yList = [aTrue + bTrue*x + np.random.normal(0, std) for x in xList]
@@ -52,4 +52,4 @@ for i in range(iterations):
 
 histoData = np.histogram(aList)
 
-plt.plot(histoData[1][0:-1], histoData[0], 'bo')
+plt.bar(histoData[1][0:-1], histoData[0])
