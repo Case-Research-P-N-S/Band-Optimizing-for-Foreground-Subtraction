@@ -50,6 +50,8 @@ for i in range(iterations):
     bList.append(results[1])
     rSquareList.append(results[2])
 
-histoData = np.histogram(aList)
+histoDataA = np.histogram(aList)
+#histoDataB = np.histogram(bList)
 
-plt.bar(histoData[1][0:-1], histoData[0])
+plt.bar(histoDataA[1][0:-1], histoDataA[0])
+#plt.bar(histoDataB[1][0:-1], histoDataB[0])
