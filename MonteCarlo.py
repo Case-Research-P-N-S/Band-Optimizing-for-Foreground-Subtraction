@@ -36,6 +36,7 @@ rSquareList = []
 
 xList = [1,2,3,4,5]
 
+<<<<<<< HEAD:MonteCarloGenerator.py
 
 # assuming x's are constant, may later generate x's from a normal distribution
 # how many times the Monte Carlo is repeated
@@ -63,3 +64,6 @@ for a in aList:
             
 print frequency
 plt.plot(bList, aList, "bo")
+=======
+print resultsList
+>>>>>>> 213ff0266dae646d858de83d2578536370fca94d:MonteCarlo.py
