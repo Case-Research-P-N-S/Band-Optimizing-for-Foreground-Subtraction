@@ -1,6 +1,3 @@
-import numpy as np
-import scipy as sp
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 from MonteCarlo import monteCarloGen
 
+monteCarloGen([1,2,3,4,5], 1, 1, 1, 100000)
