@@ -5,13 +5,8 @@ import numpy as np
 import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-
-#try:
 import LinearBestFitFunction as fit
-# trying to import from website
-# except:
-#    import site as fit
-#    site.addsitedir("https://raw.githubusercontent.com/Case-Research-P-N-S/Band-Optimizing-for-Foreground-Subtraction/master/LinearBestFitFunction.py")
+
 
 def monteCarloGen(xList, aTrue, bTrue, std, iterations):   
   
