@@ -38,9 +38,11 @@ def monteCarloGen(xList, aTrue, bTrue, std):
         bList.append(results[1])
         rSquareList.append(results[2])
     
-    if iterations > 10000:
-        binNumber = 1000
-    else:
+    if iterations > 10**6:
+        binNumber = 10**5
+    else:nmrs91308
+    nmrs91308
+    
         binNumber = iterations/10
     
     histoDataA = np.histogram(aList, binNumber)
