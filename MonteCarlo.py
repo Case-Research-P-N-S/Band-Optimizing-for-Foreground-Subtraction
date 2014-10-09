@@ -13,7 +13,7 @@ import LinearBestFitFunction as fit
 #    import site as fit
 #    site.addsitedir("https://raw.githubusercontent.com/Case-Research-P-N-S/Band-Optimizing-for-Foreground-Subtraction/master/LinearBestFitFunction.py")
 
-def monteCarloGen(xList, aTrue, bTrue, std):   
+def monteCarloGen(xList, aTrue, bTrue, std, iterations):   
   
     # ---------------------------------------------------
     # Theoretical Values for a and b (slope and intercept)
@@ -27,7 +27,7 @@ def monteCarloGen(xList, aTrue, bTrue, std):
     
     # assuming x's are constant, may later generate x's from a normal distribution
     # how many times the Monte Carlo is repeated
-    iterations = 1000
+
     for i in range(iterations):
         # generating yList
         yList = [aTrue + bTrue*x + np.random.normal(0, std) for x in xList]
@@ -38,10 +38,10 @@ def monteCarloGen(xList, aTrue, bTrue, std):
         bList.append(results[1])
         rSquareList.append(results[2])
     
-    if iterations > 10**6:
-        binNumber = 10**5
+    if iterations < 100:
+        binNumber = int(iterations/10)
     else:
-        binNumber = iterations/10
+        binNumber = 100
     
     histoDataA = np.histogram(aList, binNumber)
     histoDataB = np.histogram(bList, binNumber)
