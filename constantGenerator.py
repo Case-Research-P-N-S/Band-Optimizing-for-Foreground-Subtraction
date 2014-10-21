@@ -52,18 +52,18 @@ def matrixFunction(functionList, functionRanges, errorYList, xList):
     columns = len(functionList)
     rows = len(xList)
     resultMatrix = np.empty([columns, rows])
-    
+'''
     for function, yRange in zip(functionList, functionRanges):
         #this creates 3 temp lists which will be recombined for the final YLists so that there are 0s in the undefined areas
         tempA = [0 for i in np.arange(xMin, yRange[0], xStep)]
         tempB = [y for y in function]
         tempC = [0 for i in np.arange(yRange[1], xMax, xStep)]
         functionListAdj = tempA + tempB + tempC
-        
+'''
     for i in range(columns):
         for j in range(rows):
             s = errorYList[j]
-            np.append(resultMatrix, [function/s for function in functionListAdj])
+            np.append(resultMatrix, [function/s for function in functionList])
     return resultMatrix
 
 print matrixFunction(YList, YRange, errorYList, xList)
