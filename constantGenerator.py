@@ -46,11 +46,12 @@ def matrixFunction(functionList, errorYList, xList):
     columns = len(functionList)
     rows = len(xList)
     resultMatrix = np.empty([columns, rows])
-
-    for i in range(columns):
-        for j in range(rows):
+    tempList = np.empty([columns, 1])
+    for i in range(rows):
+        for j in range(columns):
             s = errorYList[j]
-            np.append(resultMatrix, [[x/s for x in function] for function in functionList])
+            tempList = [x/s for x in functionList[j]]
+        np.append(resultMatrix, tempList)
     return resultMatrix
 
 # initialization of Matrix A and variable b
