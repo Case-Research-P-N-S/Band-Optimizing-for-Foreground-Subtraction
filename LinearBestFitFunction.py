@@ -22,7 +22,7 @@ def linearFit(xList, yList):
     # error if xlist and ylist are different lengths
     if Nx != Ny:
         print "Error: incompatible lists"
-        raise Exception("Incompatible List length")
+        raise Exception("Incompatible List Lengths")
     
     #the degree =1 of the polynomial equation 
     ''' 
