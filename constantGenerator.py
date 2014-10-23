@@ -31,6 +31,7 @@ def matrixFunction(functionList, errorYList):
     resultMatrix = np.matrix([[0.0 for i in functionList] for i in errorYList])
     # initialize the list used as temporary storage for the row values
     tempList = np.empty(columns)
+    
     for i in range(rows):
         for j in range(columns):
             s = errorYList[j]
