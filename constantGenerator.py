@@ -19,17 +19,17 @@ Y4 Function
 '''
 #------------------------------------------
 # Creating Test Data
-yMeasured = [np.random.normal(0, 4) for y in range(10)]
+yMeasured = [np.random.normal(0, 0.1) for y in range(10)]
 
 # making a test xList and errorYList
 xList = [x for x in range(10)]
-errorYList = [np.random.normal(0, 4) for y in range(10)]
+errorYList = [np.random.normal(0, 0.1) for y in range(10)]
 
 # creating test Ylists. These arrays will actually be generated from given functions Y1, Y2, Y3, Y4, etc.
-Y1List = [np.random.normal(0, 4) for i in range(10)]
-Y2List = [np.random.normal(1, 6) for i in range(10)]
-Y3List = [np.random.normal(4, 2) for i in range(10)]
-Y4List = [np.random.normal(0, 3) for i in range(10)]
+Y1List = [1,2,3,4,5,6,7,8,9,10]
+#Y2List = [10,9,8,7,6,5,4,3,2,1]
+#Y3List = [5,6,7,8,9,10,1,2,3,4]
+#Y4List = [4,3,2,1,10,9,8,7,6,6]
 
 if len(Y1List) != len(Y2List):
    print "Error: incompatible lists"
@@ -40,7 +40,7 @@ if len(Y1List) != len(Y2List):
 
 
 # this just makes it easier to refer to all the YLists
-YList = [Y1List, Y2List, Y3List, Y4List]
+YList = [Y1List] #, Y2List, Y3List, Y4List]
 
 def matrixFunction(functionList, errorYList, xList):
     columns = len(functionList)
@@ -55,6 +55,7 @@ def matrixFunction(functionList, errorYList, xList):
 
 # initialization of Matrix A and variable b
 matrixA = matrixFunction(YList, errorYList, xList)
+print matrixA
 
 VectorB = np.empty([2, len(yMeasured)])
 
