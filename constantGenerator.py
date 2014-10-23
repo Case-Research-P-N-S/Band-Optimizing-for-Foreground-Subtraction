@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 from scipy import linalg
 
 # xi = x's from xlist
@@ -54,20 +53,23 @@ def matrixFunction(functionList, errorYList):
 
 # initialization of Matrix A and variable b
 matrixA = matrixFunction(YList, errorYList)
-print matrixA
 
-VectorB = np.empty([2, len(yMeasured)])
+
+vectorB = np.empty([2, len(yMeasured)])
 
 for y, s in zip(yMeasured, errorYList):
-    np.append(VectorB, [y/s])
+    np.append(vectorB, [y/s])
 
 # ((A transpose) dot (A))
-tempA = np.dot(matrixA.transpose(), matrixA)
+tempA = np.dot(matrixA.T, matrixA)
 
 # inverse of a matrix
-tempB = sp.linalg.inv(tempA)
+tempB = tempA.I
 
 # 
-tempC = np.dot(matrixA.transpose(), tempB)
+tempC = np.dot(matrixA.T, tempB)
 
-finalConstants = np.dot(tempC, VectorB)
+print tempC, vectorB
+finalConstants = np.dot(tempC, vectorB)
+
+print finalConstants
