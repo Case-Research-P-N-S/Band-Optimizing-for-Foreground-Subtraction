@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as sp
+from scipy import linalg
 
 # xi = x's from xlist
 # yi = y's from ylist
