@@ -1,4 +1,5 @@
 import numpy as np
+import scipy as sp
 
 # xi = x's from xlist
 # yi = y's from ylist
@@ -18,24 +19,21 @@ Y4 Function
 '''
 #------------------------------------------
 # Creating Test Data
-
+yMeasured = [np.random.normal(0, 4) for y in range(10)]
 
 # making a test xList and errorYList
-xList = [x for x in range(1000)]
-errorYList = [np.random.normal(0, 4) for y in range(1000)]
+xList = [x for x in range(10)]
+errorYList = [np.random.normal(0, 4) for y in range(10)]
 
 # creating test Ylists. These arrays will actually be generated from given functions Y1, Y2, Y3, Y4, etc.
-Y1List = [np.random.normal(0, 4) for i in range(5)]
-Y2List = [np.random.normal(1, 6) for i in range(5)]
-Y3List = [np.random.normal(4, 2) for i in range(5)]
-Y4List = [np.random.normal(0, 3) for i in range(5)]
+Y1List = [np.random.normal(0, 4) for i in range(10)]
+Y2List = [np.random.normal(1, 6) for i in range(10)]
+Y3List = [np.random.normal(4, 2) for i in range(10)]
+Y4List = [np.random.normal(0, 3) for i in range(10)]
 
-# Creating test y-ranges
-rangeY1 = [-1,3]
-rangeY2 = [4,7]
-rangeY3 = [2,3]
-rangeY4 = [0,10]
-
+if len(Y1List) != len(Y2List):
+   print "Error: incompatible lists"
+   raise Exception("Incompatible List length")
 
 #------------------------------------------
 # Matrix Function
@@ -43,27 +41,33 @@ rangeY4 = [0,10]
 
 # this just makes it easier to refer to all the YLists
 YList = [Y1List, Y2List, Y3List, Y4List]
-YRange = [rangeY1, rangeY2, rangeY3, rangeY4]
 
-def matrixFunction(functionList, functionRanges, errorYList, xList):
-    xMax = max(xList)
-    xMin = min(xList)
-    xStep = xList[1]-xList[0]       #other possible way of calculating if xList is not integer list = (xMax - xMin) / rows
+def matrixFunction(functionList, errorYList, xList):
     columns = len(functionList)
     rows = len(xList)
     resultMatrix = np.empty([columns, rows])
-'''
-    for function, yRange in zip(functionList, functionRanges):
-        #this creates 3 temp lists which will be recombined for the final YLists so that there are 0s in the undefined areas
-        tempA = [0 for i in np.arange(xMin, yRange[0], xStep)]
-        tempB = [y for y in function]
-        tempC = [0 for i in np.arange(yRange[1], xMax, xStep)]
-        functionListAdj = tempA + tempB + tempC
-'''
+
     for i in range(columns):
         for j in range(rows):
             s = errorYList[j]
-            np.append(resultMatrix, [function/s for function in functionList])
+            np.append(resultMatrix, [[x/s for x in function] for function in functionList])
     return resultMatrix
 
-print matrixFunction(YList, YRange, errorYList, xList)
+# initialization of Matrix A and variable b
+matrixA = matrixFunction(YList, errorYList, xList)
+
+VectorB = np.empty([2, len(yMeasured)])
+
+for y, s in zip(yMeasured, errorYList):
+    np.append(VectorB, [y/s])
+
+# ((A transpose) dot (A))
+tempA = np.dot(matrixA.transpose(), matrixA)
+
+# inverse of a matrix
+tempB = sp.linalg.inv(tempA)
+
+# 
+tempC = np.dot(matrixA.transpose(), tempB)
+
+finalConstants = np.dot(tempC, VectorB)
