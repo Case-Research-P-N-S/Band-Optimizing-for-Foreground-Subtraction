@@ -23,17 +23,14 @@ yMeasured = [np.random.normal(0, 0.1) for y in range(10)]
 
 # making a test xList and errorYList
 xList = [x for x in range(10)]
-errorYList = [np.random.normal(0, 0.1) for y in range(10)]
+#errorYList = [np.random.normal(0, 0.1) for y in range(10)]
+errorYList = [2.0 for i in range(10)]
 
 # creating test Ylists. These arrays will actually be generated from given functions Y1, Y2, Y3, Y4, etc.
-Y1List = [1,2,3,4,5,6,7,8,9,10]
+Y1List = [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]
 #Y2List = [10,9,8,7,6,5,4,3,2,1]
 #Y3List = [5,6,7,8,9,10,1,2,3,4]
 #Y4List = [4,3,2,1,10,9,8,7,6,6]
-
-if len(Y1List) != len(Y2List):
-   print "Error: incompatible lists"
-   raise Exception("Incompatible List length")
 
 #------------------------------------------
 # Matrix Function
@@ -42,20 +39,20 @@ if len(Y1List) != len(Y2List):
 # this just makes it easier to refer to all the YLists
 YList = [Y1List] #, Y2List, Y3List, Y4List]
 
-def matrixFunction(functionList, errorYList, xList):
+def matrixFunction(functionList, errorYList):
     columns = len(functionList)
-    rows = len(xList)
-    resultMatrix = np.empty([columns, rows])
-    tempList = np.empty([columns, 1])
+    rows = len(errorYList)
+    resultMatrix = np.matrix([[0.0 for i in functionList] for i in errorYList])
+    tempList = np.empty(columns)
     for i in range(rows):
         for j in range(columns):
             s = errorYList[j]
-            tempList = [x/s for x in functionList[j]]
-        np.append(resultMatrix, tempList)
+            tempList[j] = functionList[j][i]/s
+        resultMatrix[i] = tempList
     return resultMatrix
 
 # initialization of Matrix A and variable b
-matrixA = matrixFunction(YList, errorYList, xList)
+matrixA = matrixFunction(YList, errorYList)
 print matrixA
 
 VectorB = np.empty([2, len(yMeasured)])
