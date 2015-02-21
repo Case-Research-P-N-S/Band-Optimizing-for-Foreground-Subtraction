@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from dataExtractor import extractData
 
 #------------------------------------------
 # Creating Test Data
@@ -17,7 +18,7 @@ Y2List = [5.67**(10**-8)*(x**4) for x in xList]
 #Y3List = [5,6,7,8,9,10,1,2,3,4]
 #Y4List = [4,3,2,1,10,9,8,7,6,6]
 
-yMeasured = [y*np.random.normal(1,0.1) for y in Y1List]
+yMeasured = extractData("LAMDA Data")
 
 #------------------------------------------
 # Matrix Function

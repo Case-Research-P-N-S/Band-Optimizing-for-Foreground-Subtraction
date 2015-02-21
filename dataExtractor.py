@@ -1,10 +1,10 @@
-from numpy import genfromtxt
+import numpy as np
 
-outputFile = open("LAMDA Data BB", "w")
-
-data = genfromtxt("LAMDA Data")
-
-for i in data:
-    outputFile.write(str(i[3]) + '\n')
-
-outputFile.close()
+def extractData(filename, columnNumber = 3):
+    data = np.genfromtxt(filename)
+    outputList = []
+    
+    for i in data:
+        outputList.append(i[3])
+        
+    return outputList
