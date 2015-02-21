@@ -65,4 +65,3 @@ tempC = np.dot(matrixA.T, vectorB)
 finalTemp = np.dot(tempC, tempB)
 vectorA = np.array(finalTemp)[0]
 print vectorA
-np.plot([x for x in range(2,1501)],yMeasured,Y1List,Y2List)
