@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 xList = [x for x in range(10)]
 
 #errorYList = [np.random.normal(0, 0.1) for y in range(10)]
-errorYList = [1.0 for i in range(10)]
+errorYList = [0.1 for i in range(10)]
 
 # creating test Ylists. These arrays will actually be generated from given functions Y1, Y2, Y3, Y4, etc.
 Y1List = [x**1.9 for x in xList]
@@ -18,7 +18,6 @@ Y2List = [5.67**(10**-8)*(x**4) for x in xList]
 #Y4List = [4,3,2,1,10,9,8,7,6,6]
 
 yMeasured = [y*np.random.normal(1,0.1) for y in Y1List]
-
 
 #------------------------------------------
 # Matrix Function
@@ -52,7 +51,6 @@ vectorB = np.empty(len(yMeasured))
 
 for y, s, i in zip(yMeasured, errorYList, range(len(yMeasured))):
     vectorB[i] = y/s
-    print y, s
 
 # ((A transpose) dot (A))
 tempA = np.dot(matrixA.T, matrixA)
@@ -65,6 +63,4 @@ tempC = np.dot(matrixA.T, vectorB)
 
 finalTemp = np.dot(tempC, tempB)
 vectorA = np.array(finalTemp)[0]
-
-for Yvals in YList:
-    plt.plot(xList, Yvals)
+print vectorA
