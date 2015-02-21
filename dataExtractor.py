@@ -1,8 +1,8 @@
 from numpy import genfromtxt
 
-outputFile = open("LAMDA Data BB", "w")
+outputFile = open("LAMA Data BB", "w")
 
-data = genfromtxt("Lambda Data")
+data = genfromtxt("LAMDA Data")
 print data
 
 for i in data:
@@ -10,4 +10,3 @@ for i in data:
     outputFile.write('\n')
 
 outputFile.close()
-dataFile.close()
