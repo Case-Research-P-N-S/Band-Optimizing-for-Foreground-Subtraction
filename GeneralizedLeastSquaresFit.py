@@ -41,8 +41,8 @@ def dustRatio(nu1, nu2):
 
 
 # Function lists
-dustofLList = [dustRatio(90*(10**9), 150*(10**9))*dustofL(x) for x in xAxis]            # Dust of l
-BBofL = extractData("LAMDA Data")                      # BB(l)
+dustofLList = [dustRatio(90*(10**9), 150*(10**9))*dustofL(l) for l in xAxis]    # Dust of l
+BBofL = extractData("LAMDA Data")                                               # BB(l)
 
 
 #------------------------------------------
@@ -91,6 +91,6 @@ vectorA = np.array(finalTemp)[0]
 print vectorA
 
 #plt.plot([l for l in angles],yMeasured)
-plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])
-plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
-#plt.plot(xAxis, [y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])])
+#plt.plot(np.log(xAxis), np.log([y*vectorA[0] for y in dustofLList]))
+#plt.plot(np.log(xAxis), np.log([y*vectorA[1] for y in BBofL]))
+plt.plot(np.log(xAxis), np.log([y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])]))
