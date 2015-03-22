@@ -41,8 +41,7 @@ def dustRatio(nu1, nu2):
 
 
 # Function lists
-dustofLList = [dustofL(l) for l in xAxis]              # Dust of l
-blackbodyList = [blackbody(nu) for nu in frequency]    # Blackbody of (nu,T)
+dustofLList = [dustRatio(90*(10**9), 150*(10**9))*dustofL(x) for x in xAxis]            # Dust of l
 BBofL = extractData("LAMDA Data")                      # BB(l)
 
 
@@ -51,7 +50,7 @@ BBofL = extractData("LAMDA Data")                      # BB(l)
 
 
 # this just makes it easier to refer to all the YLists
-YList = [dustofLList, blackbodyList]
+YList = [dustofLList, BBofL]
 
 # Creates the A matrix for use in determining the constants
 def matrixFunction(functionList, errorYList):
@@ -93,5 +92,5 @@ print vectorA
 
 #plt.plot([l for l in angles],yMeasured)
 plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])
-plt.plot(xAxis, [y*vectorA[1] for y in blackbodyList])
-#plt.plot(np.log(xAxis), np.log([y*z for y,z in zip([y*vectorA[0] for y in dustofL],[y*vectorA[1] for y in Blackbody])]))
+plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
+#plt.plot(xAxis, [y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])])
