@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from dataExtractor import extractData
 
@@ -51,6 +50,7 @@ BBofL = extractData("LAMDA Data")                                               
 
 # this just makes it easier to refer to all the YLists
 YList = [dustofLList, BBofL]
+yMeasured = BBofL
 
 # Creates the A matrix for use in determining the constants
 def matrixFunction(functionList, errorYList):
