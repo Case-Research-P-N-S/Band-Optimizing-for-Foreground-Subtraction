@@ -6,15 +6,15 @@ from dataExtractor import extractData
 #------------------------------------------
 # Creating Test Data
 
-# making a test xList and errorYList
-xList = [x for x in range(2, 1501)]
+# making a list with all the angle l values on the x-axis
+angles = [l for l in range(2, 1501)]
 
 #errorYList = [np.random.normal(0, 0.1) for y in range(10)]
-errorYList = [0.1 for i in xList]
+errorYList = [0.1 for i in angles]
 
 # creating test Ylists. These arrays will actually be generated from given functions Y1, Y2, Y3, Y4, etc.
-Y1List = [x**1.9 for x in xList]
-Y2List = [5.67**(10**-8)*(x**4) for x in xList]
+Y1List = [l**1.9 for l in angles]
+Y2List = [5.67**(10**-8)*(l**4) for l in angles]
 #Y3List = [5,6,7,8,9,10,1,2,3,4]
 #Y4List = [4,3,2,1,10,9,8,7,6,6]
 
@@ -65,6 +65,6 @@ tempC = np.dot(matrixA.T, vectorB)
 finalTemp = np.dot(tempC, tempB)
 vectorA = np.array(finalTemp)[0]
 print vectorA
-plt.plot([x for x in range(2,1501)],yMeasured)
-plt.plot([x for x in range(2,1501)],Y1List)
-plt.plot([x for x in range(2,1501)],Y2List)
+plt.plot([l for l in range(2,1501)],yMeasured)
+plt.plot([l for l in range(2,1501)],Y1List)
+plt.plot([l for l in range(2,1501)],Y2List)
