@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Main execution file
 import numpy as np
 import matplotlib.pyplot as plt
 from dataExtractor import extractData

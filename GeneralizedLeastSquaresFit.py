@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Generalized Least Squares Regression Fit
 import numpy as np
 
 # Generates normalized A vector using general least squares regression fit

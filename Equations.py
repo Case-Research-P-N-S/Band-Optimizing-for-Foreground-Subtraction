@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Equations
 import numpy as np
 
 # Equation Functions
