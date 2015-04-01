@@ -52,12 +52,13 @@ BBofL = extractData("LAMDA Data")                                               
 YList = [dustofLList, BBofL]
 yMeasured =   [0.05*x + y for x,y in zip(dustofLList,BBofL)]
 
-# Creates the A matrix for use in determining the constants
-def matrixFunction(functionList, errorYList):
+def matrixFit(functionList, errorYList, yMeasured):
+    
+    # Creates the A matrix for use in determining the constants
     columns = len(functionList)
     rows = len(errorYList)
     # initialize the matrix with float values of 0
-    resultMatrix = np.matrix([[0.0 for i in functionList] for i in errorYList])
+    matrixA = np.matrix([[0.0 for i in functionList] for i in errorYList])
     # initialize the list used as temporary storage for the row values
     tempList = np.empty(columns)
     
@@ -65,34 +66,33 @@ def matrixFunction(functionList, errorYList):
         for j in range(columns):
             s = errorYList[j]
             tempList[j] = functionList[j][i]/s
-        resultMatrix[i] = tempList
-    return resultMatrix
+        matrixA[i] = tempList
+    
+    # initialization and assignment of vector b
+    vectorB = np.empty(len(yMeasured))
+    
+    for y, s, i in zip(yMeasured, errorYList, range(len(yMeasured))):
+        vectorB[i] = y/s
+    
+    # ((A transpose) dot (A))
+    tempA = np.dot(matrixA.T, matrixA)
+    
+    # inverse of a matrix
+    tempB = tempA.I
+    
+    # Dot Product of matrix and b vector
+    tempC = np.dot(matrixA.T, vectorB)
+    
+    finalTemp = np.dot(tempC, tempB)
+    vectorA = np.array(finalTemp)[0]
+    
+    return vectorA
 
-# initialization of Matrix A
-matrixA = matrixFunction(YList, errorYList)
-
-# initialization and assignment of vector b
-vectorB = np.empty(len(yMeasured))
-
-for y, s, i in zip(yMeasured, errorYList, range(len(yMeasured))):
-    vectorB[i] = y/s
-
-# ((A transpose) dot (A))
-tempA = np.dot(matrixA.T, matrixA)
-
-# inverse of a matrix
-tempB = tempA.I
-
-# Dot Product of matrix and b vector
-tempC = np.dot(matrixA.T, vectorB)
-
-finalTemp = np.dot(tempC, tempB)
-vectorA = np.array(finalTemp)[0]
-print vectorA
+vectorA = matrixFit(YList, errorYList, yMeasured)
 
 #plt.plot([l for l in angles],yMeasured)
 plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])
 plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
+#plt.plot(np.log(xAxis), np.log([y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])]))
 #plt.xlim([0,400])
 #plt.ylim([-7,0])
-plt.plot(np.log(xAxis), np.log([y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])]))
