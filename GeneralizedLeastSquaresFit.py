@@ -50,7 +50,7 @@ BBofL = extractData("LAMDA Data")                                               
 
 # this just makes it easier to refer to all the YLists
 YList = [dustofLList, BBofL]
-yMeasured = BBofL
+yMeasured =   [0.05*x + y for x,y in zip(dustofLList,BBofL)]
 
 # Creates the A matrix for use in determining the constants
 def matrixFunction(functionList, errorYList):
@@ -91,6 +91,8 @@ vectorA = np.array(finalTemp)[0]
 print vectorA
 
 #plt.plot([l for l in angles],yMeasured)
-#plt.plot(np.log(xAxis), np.log([y*vectorA[0] for y in dustofLList]))
-#plt.plot(np.log(xAxis), np.log([y*vectorA[1] for y in BBofL]))
+plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])
+plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
+#plt.xlim([0,400])
+#plt.ylim([-7,0])
 plt.plot(np.log(xAxis), np.log([y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])]))
