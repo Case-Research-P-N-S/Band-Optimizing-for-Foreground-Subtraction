@@ -3,7 +3,6 @@
 
 import numpy as np
 
-
 '''
     A function that takes in two lists of equal length corresponding
     the x-coords and y-coords of a graph and returns the a list containing
