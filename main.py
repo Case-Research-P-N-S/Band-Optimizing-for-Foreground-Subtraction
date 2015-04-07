@@ -34,9 +34,10 @@ BBofL = extractData("LAMDA Data")                                               
 
 # this just makes it easier to refer to all the YLists
 YList = [dustofLList, BBofL]
-yMeasured =   [0.05*x + y for x,y in zip(dustofLList,BBofL)]
+yMeasured =   [x+y+np.random.normal(x+y,(x+y)/5) for x,y in zip(dustofLList,BBofL)]
 
 vectorA = matrixFit(YList, yMeasured, errorYList)
+
 
 #plt.plot([l for l in angles],yMeasured)
 plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])

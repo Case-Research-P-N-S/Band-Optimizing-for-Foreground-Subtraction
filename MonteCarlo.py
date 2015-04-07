@@ -3,8 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import LinearBestFitFunction as fit
-
+from LinearBestFitFunction import linearFit
 
 def monteCarloGen(xList, aTrue, bTrue, std, iterations):   
   
@@ -40,7 +39,7 @@ def monteCarloGen(xList, aTrue, bTrue, std, iterations):
     histoDataB = np.histogram(bList, binNumber)
     
     plt.figure(0)
-    plotFit = fit.linearFit(aList, bList)
+    plotFit = linearFit(aList, bList)
     plotList = [x for x in np.arange(min(aList), max(aList), 0.1)]
     plt.plot(aList, bList, 'bo')
     plt.plot(plotList, [plotFit[0] + plotFit[1]*x for x in plotList], 'r-')
