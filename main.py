@@ -13,9 +13,6 @@ from Equations import *
 xAxis = [l for l in range(2, 1501)]
 frequency = [x*(10**9) for x in xAxis]
 
-#errorYList = [np.random.normal(0, 0.1) for y in range(10)]
-errorYList = [0.1 for i in xAxis]
-
 
 # Reference table of constants
 h = 6.62606957*(10**-34)    # Plancks constant
@@ -30,18 +27,23 @@ nu0 = 1                     # Arbitrary value to fill space in function
 # Function lists
 dustofLList = [dustRatio(90*(10**9), 150*(10**9))*dustofL(l) for l in xAxis]    # Dust of l
 BBofL = extractData("LAMDA Data")                                               # BB(l)
-
-
-# this just makes it easier to refer to all the YLists
 YList = [dustofLList, BBofL]
-yMeasured =   [x+y+np.random.normal(x+y,(x+y)/5) for x,y in zip(dustofLList,BBofL)]
 
-vectorA = matrixFit(YList, yMeasured, errorYList)
+yMeasured =   [x+y+np.random.normal(x+y,(x+y)/10) for x,y in zip(dustofLList,BBofL)] #the added noise is fake data until r
+errorYMeasured = [0.1 for i in xAxis]
 
+vectorA = matrixFit(YList, yMeasured, errorYMeasured)
 
-#plt.plot([l for l in angles],yMeasured)
+plt.close('all')
+plt.subplot(3,1,1)
+plt.plot(xAxis,[y for y in yMeasured])
+plt.subplot(3,1,2)
 plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])
 plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
-#plt.plot(np.log(xAxis), np.log([y + z for y, z in zip([y*vectorA[0] for y in dustofLList], [y*vectorA[1] for y in BBofL])]))
-#plt.xlim([0,400])
-#plt.ylim([-7,0])
+plt.subplot(3,1,3)
+plt.yscale('log')
+plt.xscale('log')
+plt.plot(xAxis,[y*vectorA[0] for y in dustofLList])
+plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
+
+print vectorA
