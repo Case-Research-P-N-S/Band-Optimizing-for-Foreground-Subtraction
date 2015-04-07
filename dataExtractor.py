@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+# Data extractor for BB
 import numpy as np
 
 def extractData(filename, columnNumber = 3):
