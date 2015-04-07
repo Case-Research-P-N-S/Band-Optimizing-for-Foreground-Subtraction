@@ -2,7 +2,6 @@
 # Generalized Least Squares Regression Fit
 import numpy as np
 <<<<<<< HEAD
-<<<<<<< HEAD
 import matplotlib.pyplot as plt
 import math
 from dataExtractor import extractData
@@ -67,16 +66,10 @@ yMeasured = BBofL
 def matrixFunction(functionList, errorYList):
 =======
 
-=======
-
->>>>>>> origin/master
 # Generates normalized A vector using general least squares regression fit
 def matrixFit(functionList, yMeasured, errorYList):
     
     # Creates the A matrix for use in determining the constants
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
 >>>>>>> origin/master
     columns = len(functionList)
     rows = len(errorYList)
@@ -89,7 +82,6 @@ def matrixFit(functionList, yMeasured, errorYList):
         for j in range(columns):
             s = errorYList[j]
             tempList[j] = functionList[j][i]/s
-<<<<<<< HEAD
 <<<<<<< HEAD
         resultMatrix[i] = tempList
     return resultMatrix
@@ -126,8 +118,6 @@ plt.plot(np.log(xAxis), np.log([y + z for y, z in zip([y*vectorA[0] for y in dus
 plt.plot([x for x in range(2,1501)],Y2List)
 #>>>>>>> Stashed changes
 =======
-=======
->>>>>>> origin/master
         matrixA[i] = tempList
     
     # initialization and assignment of vector b
@@ -150,9 +140,5 @@ plt.plot([x for x in range(2,1501)],Y2List)
     vectorA = np.array(finalTemp)[0]
     
     return vectorA
-<<<<<<< HEAD
-    
->>>>>>> origin/master
-=======
     
 >>>>>>> origin/master
