@@ -2,7 +2,7 @@
 # Main execution file
 import numpy as np
 import matplotlib.pyplot as plt
-from DataExtractor import extractData
+from dataExtractor import extractData
 from GeneralizedLeastSquaresFit import matrixFit
 from Equations import *
 
@@ -29,7 +29,7 @@ dustofLList = [dustRatio(90*(10**9), 150*(10**9))*dustofL(l) for l in xAxis]    
 BBofL = extractData("LAMDA Data")                                               # BB(l)
 YList = [dustofLList, BBofL]
 
-yMeasured =   [x+y+np.random.normal(x+y,(x+y)/10) for x,y in zip(dustofLList,BBofL)] #the added noise is fake data until r
+yMeasured =   [x+y+np.random.normal(0,(x+y)/10) for x,y in zip(dustofLList,BBofL)] #the added noise is fake data until r
 errorYMeasured = [0.1 for i in xAxis]
 
 vectorA = matrixFit(YList, yMeasured, errorYMeasured)
@@ -40,10 +40,13 @@ plt.plot(xAxis,[y for y in yMeasured])
 plt.subplot(3,1,2)
 plt.plot(xAxis, [y*vectorA[0] for y in dustofLList])
 plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
+plt.title(vectorA)
 plt.subplot(3,1,3)
 plt.yscale('log')
 plt.xscale('log')
+
+
 plt.plot(xAxis,[y*vectorA[0] for y in dustofLList])
 plt.plot(xAxis, [y*vectorA[1] for y in BBofL])
 
-print vectorA
+plt.show()
