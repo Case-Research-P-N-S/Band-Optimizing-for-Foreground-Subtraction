@@ -32,10 +32,10 @@ def matrixFit(functionList, yMeasured, errorYList):
     tempB = tempA.I
     
     # Dot Product of matrix and b vector
-    tempC = np.dot(matrixA.T, vectorB)
+    tempC = np.dot(tempB, matrixA.T)
     
     # Turns result into python array
-    finalTemp = np.dot(tempC, tempB)
+    finalTemp = np.dot(tempC, vectorB)
     vectorA = np.array(finalTemp)[0]
     
     return vectorA

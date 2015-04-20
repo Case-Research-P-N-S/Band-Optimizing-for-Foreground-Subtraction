@@ -23,3 +23,22 @@ def dustofL(l):
 # Provides the ratio to multiply the dust by when given two frequencies of blackbody
 def dustRatio(nu1, nu2):
     return (dustFreqPowLaw(nu1)*blackbodyConvertofNu(nu2))/(dustFreqPowLaw(nu2)*blackbodyConvertofNu(nu1))
+
+# Bins the given data into the given bin size (defatult = 20)
+def binData(data, bins = 20):
+    for i, x in np.arange(max(data), sum(data) / bins):
+        if i % bins == 0 and i != 0:
+            bins.append(sum / bin)
+    return bins
+ 
+''' Useless atm
+def histogramData(data, bin = 20):
+    sum = 0
+    bins = []
+    for i, x in enumerate(data):
+        sum += x
+        if i % bin == 0:
+            bins.append(sum / bin)
+            sum = 0
+    return np.histogram(x, bins)
+    '''

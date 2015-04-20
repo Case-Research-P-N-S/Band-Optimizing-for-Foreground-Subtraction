@@ -1,3 +1,3 @@
 Contributors: Philip Smith, Nathaniel Starkman
 
-Phil drools Nathaniel rulez
+Nathaniel is sooper hott (pronounced like butt but hot instead)
