@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 # Equations
-import numpy as np
 
-# Equation Functions
+import numpy as np
 
 
 def dustFreqPowLaw(nu, nu0=1):
@@ -39,40 +38,19 @@ def binCenter(lBins):
     return out
 
 
-def binData(data, xData, xStep=20, bounds="false", bot=0, top=360):
+def binData(data, xData, xStep=[20]):
     # averages the given data into bins of the given size
-    #  This function breaks the data into bins and averages over that bin.
-    #  It currently only does evenly sized bins.
-    #  Check out Bar Chart function for better bethod?
-    if bounds == "true":
-        xData = xData[bot:top]
-    out = []
-    index = 0
-    for i in range((len(xData)-(len(xData) % xStep))/xStep):  # this yields the floor of the division of (len(nData))/xStep
-        temp = []
-        for j in range(xStep):
-            temp.append(data[index])
-            index += 1
-        out.append(np.mean(temp))
-    return out
 
-# FOR BAR Charts averages the given data into bins of the given size
-# def binBarData(data, xData, step = 20):
-#     x1 = xData[0]
-#     x2 = xData[0] + step
-#     out = []
-#     temp = []
-#     j = 0
-#     while x2 <= xData[-1]:
-#         temp = []
-#         while x1 < x2:
-#             temp.append(data[j])
-#             j += 1
-#             x1 = xData[j]
-#         out.append(np.mean(temp))
-#         x2 += step
-#     while j < len(data):
-#         temp.append(data[j])
-#         j += 1
-#     out.append(np.mean(temp))
-#     return out
+    if len(xStep) == 1:                                               # makes xStep a list
+        for i in range((len(xData)-(len(xData) % xStep))/xStep):    # yields the floor of the division of (len(nData))/xStep
+            xStep.append(xStep[0])
+    outList = []
+    index, binnum = 0                                                 # index steps through every datapoint. binnum is current bin number
+    for i in range((len(xData)-(len(xData) % xStep))/xStep):          # steps throu the bins
+        temp = []
+        for j in range(xStep[binnum]):                                # steps thru data in each bin
+            temp.append(data[index])                                  # appends data to temp list
+            index += 1                                                # index always increases, never reset
+        binnum += 1                                                   # steps through the xStep for that bin
+        outList.append(np.mean(temp))                                 # appends average of current temp list to the outList
+    return outList

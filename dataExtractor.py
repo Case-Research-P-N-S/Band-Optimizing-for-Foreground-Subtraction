@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Data extractor for BB
+
 import numpy as np
 
 
@@ -9,6 +10,6 @@ def extractData(filename, columnNumber=3):
     outputList = []
 
     for i in data:
-        outputList.append(i[3])
+        outputList.append(i[columnNumber])  # ouputs only 1 column of data
 
     return outputList
