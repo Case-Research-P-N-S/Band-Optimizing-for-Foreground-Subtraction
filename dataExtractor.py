@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-import numpy as np
 # Data extractor for BB
-def extractData(filename, columnNumber = 3):
+import numpy as np
+
+
+def extractData(filename, columnNumber=3):
+    # Extracts data from a file with a known number of columns of data
     data = np.genfromtxt(filename)
     outputList = []
-    
+
     for i in data:
         outputList.append(i[3])
-        
+
     return outputList

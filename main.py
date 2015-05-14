@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 # Main execution file
 import numpy as np
-import matplotlib.pyplot as plt
 from dataExtractor import extractData  # this extracts the data from a txtfile containing the Lamda Data
-from GeneralizedLeastSquaresFit import matrixFit	#
-from Equations import *
-from plottingFunction import *
-from MonteCarlo import monteCarloGen
+from GeneralizedLeastSquaresFit import matrixFit  # best fit function
+from Equations import *	 # file with most of the used equations
+from plottingFunction import *  # handles all plotting
+from MonteCarlo import monteCarloGen  # runs the monte carlo
 
-#------------------------------------------
+# ------------------------------------------
 # Creating functions
 
 # making a list with all the angle l values on the x-axis
 xMin = 40
 xMax = 400
 xStep = 20
-xAxis = [l for l in range(xMin, xMax)] # min = 2 max = 1501
+xAxis = [l for l in range(xMin, xMax)]  # min = 2 max = 1501
 frequency = [x*(10**9) for x in xAxis]
 
 
@@ -32,16 +31,16 @@ nu0 = 1                     # Arbitrary value to fill space in function
 # Function lists
 dustofLList = [dustRatio(90*(10**9), 150*(10**9))*dustofL(l) for l in xAxis]   # Dust of l
 BBofL = extractData("LAMDA Data")[xMin:xMax]                                   # BB(l)
-yTheory = [D+B for D, B in zip(dustofLList,BBofL)]
-yMeasured =   [np.random.normal(T,(T)/10) for T in yTheory] #the added noise is fake data until recieve real data
+yTheory = [D+B for D, B in zip(dustofLList, BBofL)]
+yMeasured = [np.random.normal(T, (T)/10) for T in yTheory]  #the added noise is fake data until recieve real data
 errorYMeasured = [0.2*max(yMeasured) for x in yMeasured]
 
 YList = [dustofLList, BBofL]
 vectorA = matrixFit(YList, yMeasured, errorYMeasured)
-bestFit = [D*vectorA[0]+B*vectorA[1] for D,B in zip(dustofLList, BBofL)]
+bestFit = [D*vectorA[0]+B*vectorA[1] for D, B in zip(dustofLList, BBofL)]
 
 # Bin data function lists
-lBinCenters = binCenter(lBins = range(xMin, xMax+xStep, xStep))
+lBinCenters = binCenter(lBins=range(xMin, xMax+xStep, xStep))
 dustofLBin = binData(dustofLList, xAxis)
 errordustofLBin = [0.2*max(dustofLBin) for x in dustofLBin]
 BBofLBin = binData(BBofL, xAxis)
@@ -59,9 +58,8 @@ errorBestFitBin = [0.2*max(bestFitBin) for x in bestFitBin]
 print "vectorA: {0}  vectorABin {1}".format(vectorA, vectorABin)
 
 # Plotting Stuff
-plotScatter(xAxis, yMeasured, errorYMeasured, BBofL, dustofLList, vectorA, bestFit,yTheory)
+plotScatter(xAxis, yMeasured, errorYMeasured, BBofL, dustofLList, vectorA, bestFit, yTheory)
 plotBinScatter(xAxis, lBinCenters, yMeasuredBin, errorYMeasuredBin, BBofLBin, errorBBofLBin, dustofLBin, errordustofLBin, vectorABin, bestFitBin, errorBestFitBin)
 
 # MonteCarlo
 monteCarloGen(YListBin, yMeasuredBin, errorYMeasuredBin, iterations = 10**4)
-
