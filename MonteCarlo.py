@@ -3,16 +3,17 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from LinearBestFitFunction import linearFit
+from GeneralizedLeastSquaresFit import matrixFit
+from plottingFunction import plotCorrelation, plotxListHisto
 
-def monteCarloGen(xList, aTrue, bTrue, std, iterations):   
-  
+def monteCarloGen(TList, measured, std, iterations=100):
+# matrix Fit doesn't make an r-square value 
     # ---------------------------------------------------
     # Theoretical Values for a and b (slope and intercept)
 
     aList = []
     bList = []
-    rSquareList = []
+    # rSquareList = []
     
     # ------------------------------------------------
     # Creating Best Fit Line, storing, and reiterating.
@@ -22,13 +23,13 @@ def monteCarloGen(xList, aTrue, bTrue, std, iterations):
 
     for i in range(iterations):
         # generating yList
-        yList = [aTrue + bTrue*x + np.random.normal(0, std) for x in xList]
+        yList = [np.random.normal(m,err) for m, err in zip(measured,std)]
         # applying lines of best fit
-        results = fit.linearFit(xList, yList)
+        results = matrixFit(TList, yList, std)
         # creating an aList, bList, and rSquareList for later analysis
         aList.append(results[0])
         bList.append(results[1])
-        rSquareList.append(results[2])
+        # rSquareList.append(results[2])
     
     if iterations < 100:
         binNumber = int(iterations/10)
@@ -38,14 +39,6 @@ def monteCarloGen(xList, aTrue, bTrue, std, iterations):
     histoDataA = np.histogram(aList, binNumber)
     histoDataB = np.histogram(bList, binNumber)
     
-    plt.figure(0)
-    plotFit = linearFit(aList, bList)
-    plotList = [x for x in np.arange(min(aList), max(aList), 0.1)]
-    plt.plot(aList, bList, 'bo')
-    plt.plot(plotList, [plotFit[0] + plotFit[1]*x for x in plotList], 'r-')
-    
-    plt.figure(1)
-    plt.bar(histoDataB[1][0:-1], histoDataB[0], histoDataB[1][1]-histoDataB[1][0])
-    
-    plt.figure(2)
-    plt.bar(histoDataA[1][0:-1], histoDataA[0], histoDataA[1][1]-histoDataA[1][0])
+    plotCorrelation(aList,bList)
+    plotxListHisto(histoDataA,histoDataA)
+

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-# Data extractor for BB
 import numpy as np
-
+# Data extractor for BB
 def extractData(filename, columnNumber = 3):
     data = np.genfromtxt(filename)
     outputList = []
