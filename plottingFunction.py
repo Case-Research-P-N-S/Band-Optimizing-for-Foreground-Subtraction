@@ -56,41 +56,13 @@ def plotxListHisto(histoDataA,histoDataB):
 	plt.subplot(2,1,1)
 	plt.bar(histoDataA[1][0:-1], histoDataA[0], histoDataA[1][1]-histoDataA[1][0])
 	plt.title('aList')
-	plt.legend('aList Binnbed','upper right')
+	plt.legend('aList Binned',loc='upper right')
 
 	plt.subplot(2,1,2)
 	plt.bar(histoDataB[1][0:-1], histoDataB[0], histoDataB[1][1]-histoDataB[1][0])
 	plt.title('bList')
-	plt.legend('bList Binned','upper right')
+	plt.legend('bList Binned',loc='upper right')
 
 	plt.savefig('aList, bList histograms.png')
 
-# def plotBinBar(lBarBins, dustofLBarBin, BBofLBarBin, yMeasuredBarBin, errorYMeasuredBarBin, vectorABarBin):
-# 	# Bar Chart Bin Plots
-# 	plt.close('all')
-
-# 	plt.subplot(2, 1, 1)
-# 	indices = np.arange(len(lBarBins))
-# 	bar_width = 0.8
-# 	plt.bar(indices, yMeasuredBarBin, bar_width, alpha = 0.5, color='b', yerr=errorYMeasuredBarBin)
-# 	plt.xlabel('lBarBins')
-# 	plt.ylabel('Intensity')
-# 	plt.title('yMeasuredBarBin Bar Chart')
-# 	plt.xticks(indices, ['{}'.format(l) for l in everynthlabel(lBarBins,0,3)])
-# 	plt.legend()
-# 	plt.tight_layout()
-
-# 	plt.subplot(2,1,2)
-# 	indices = np.arange(len(lBarBins))
-# 	bar_width = 0.8
-# 	plt.bar(indices, np.array(dustofLBarBin)*vectorABarBin[0], bar_width, alpha = 0.5, color='b', yerr=[0.2*max(np.array(dustofLBarBin)*vectorABarBin[0]) for x in dustofLBarBin])
-# 	plt.bar(indices, np.array(BBofLBarBin)*vectorABarBin[1], bar_width, alpha = 0.5, color='r', yerr=[0.2*max(np.array(BBofLBarBin)*vectorABarBin[1]) for x in BBofLBarBin])
-# 	plt.xlabel('lBarBins')
-# 	plt.ylabel('Intensity')
-# 	plt.title(vectorABarBin)
-# 	plt.xticks(indices, ['{}'.format(l) for l in everynthlabel(lBarBins, 0, 3)])
-# 	plt.legend()
-# 	plt.tight_layout()
-
-# 	plt.savefig("barplots.png")
 

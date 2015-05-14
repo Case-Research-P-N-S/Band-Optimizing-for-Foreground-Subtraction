@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from GeneralizedLeastSquaresFit import matrixFit
 from plottingFunction import plotCorrelation, plotxListHisto
 
-def monteCarloGen(TList, measured, std, iterations=100):
+def monteCarloGen(TList, measured, std, iterations=1000):
 # matrix Fit doesn't make an r-square value 
     # ---------------------------------------------------
     # Theoretical Values for a and b (slope and intercept)

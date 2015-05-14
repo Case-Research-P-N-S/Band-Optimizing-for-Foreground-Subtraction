@@ -34,7 +34,9 @@ def binCenter(lBins):
 
 # averages the given data into bins of the given size
 def binData(data, xData, xStep = 20, bounds = "false", bot = 0, top = 360):
-    # This function breaks the data into bins and averages over that bin. It currently only does evenly sized bins.
+    # This function breaks the data into bins and averages over that bin. 
+    # It currently only does evenly sized bins. 
+    # Check out Bar Chart function for better bethod?
     if bounds == "true": xData = xData[bot:top]
     out = []
     index = 0
@@ -66,13 +68,3 @@ def binData(data, xData, xStep = 20, bounds = "false", bot = 0, top = 360):
 #         j += 1
 #     out.append(np.mean(temp))
 #     return out
-
-# returns every nth value of an array
-# def everynthlabel(a, start = 0, n = 2):
-#     newarray = []
-#     for i, x in enumerate(a[start:]):
-#         if i%n == 0:
-#             newarray.append(x)
-#         else:
-#             newarray.append('')
-#     return newarray

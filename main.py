@@ -56,22 +56,12 @@ bestFitBin = [D*vectorABin[0]+B*vectorABin[1] for D, B in zip(dustofLBin, BBofLB
 errorBestFitBin = [0.2*max(bestFitBin) for x in bestFitBin]
 
 
-# Bar chart function lists
-# lBarBins = range(xMin, xMax, xStep)
-# dustofLBarBin = binBarData(dustofLList, xAxis)
-# BBofLBarBin = binBarData(BBofL, xAxis) 
-# YListBarBin = [dustofLBarBin, BBofLBarBin] 
-# yMeasuredBarBin = binBarData(yMeasured, xAxis)
-# errorYMeasuredBarBin = [0.2*max(yMeasuredBarBin) for x in yMeasuredBarBin]
-# vectorABarBin = matrixFit(YListBarBin, yMeasuredBarBin, errorYMeasuredBarBin)
-
 print "vectorA: {0}  vectorABin {1}".format(vectorA, vectorABin)
 
 # Plotting Stuff
 plotScatter(xAxis, yMeasured, errorYMeasured, BBofL, dustofLList, vectorA, bestFit,yTheory)
 plotBinScatter(xAxis, lBinCenters, yMeasuredBin, errorYMeasuredBin, BBofLBin, errorBBofLBin, dustofLBin, errordustofLBin, vectorABin, bestFitBin, errorBestFitBin)
-# plotBinBar(lBarBins, dustofLBarBin, BBofLBarBin, yMeasuredBarBin, errorYMeasuredBarBin, vectorABarBin)
 
 # MonteCarlo
-monteCarloGen(YListBin, yMeasuredBin, errorYMeasuredBin, iterations = 1000)
+monteCarloGen(YListBin, yMeasuredBin, errorYMeasuredBin, iterations = 10**4)
 
