@@ -25,18 +25,18 @@ xStep = 20                              # l-step value used for binning
 xAxis = [l for l in range(xMin, xMax)]  # min = 2 max = 1501
 
 # Reference table of constants
-h = 6.62606957*(10**-34)                # Plancks constant
-nu1 = 90*(10**9)                        # Frequency 1
-nu2 = 150*(10**9)                       # Frequency 2
-c = 299792458                           # Speed of Light
-k = 1.3806488*(10**-23)                 # Boltzmann constant
-TDust = 19.6                            # Temperature of dust in Kelvin
-TVac = 2.7                              # Temperature of vacuum in Kelvin
-nu0 = 1                                 # ** Arbitrary value to fill space in function **
-
+nu1 = 90.0*(10**9)                 # Frequency 1
+nu2 = 150.0*(10**9)                # Frequency 2
+nu0 = 1.0                          # ** Arbitrary value to fill space in function **
+h = 6.62606957*(10**-34)           # Plancks constant
+c = 299792458                      # Speed of Light
+k = 1.3806488*(10**-23)            # Boltzmann constant
+TVac = 2.7                         # Temperature of vacuum in Kelvin
+TDust = 19.6                       # Temperature of dust in Kelvin        # This value is never called, should it be?
+const = [h, c, k, TVac, TDust]     # universal constants assembled in a list
 
 # Function lists
-dustofLList = [eqn.dustRatio(nu1, nu2)*eqn.dustofL(l) for l in xAxis]          # Dust of l
+dustofLList = [eqn.dustRatio(nu1, nu2, nu0, const)*eqn.dustofL(l) for l in xAxis]             # Dust of l
 BBofL = extractData("LAMDA Data")[xMin:xMax]                                   # BB(l) extracted from file
 yTheory = [D+B for D, B in zip(dustofLList, BBofL)]                            # the theoretical curve
 yMeasured = [np.random.normal(T, (T)/10) for T in yTheory]                     # the added noise is fake data until recieve real data
@@ -62,6 +62,7 @@ bestFitBin = [D*vectorABin[0]+B*vectorABin[1] for D, B in zip(dustofLBin, BBofLB
 errorBestFitBin = [0.2*max(bestFitBin) for x in bestFitBin]                    # error in best fit
 
 # seeing some outputs
+print lBinCenters
 print "vectorA: {0}  vectorABin {1}".format(vectorA, vectorABin)
 
 # ------------------------------------------

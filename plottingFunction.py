@@ -3,7 +3,6 @@
 # Plotting Function
 import numpy as np
 import matplotlib.pyplot as plt
-import Equations as eqn
 from LinearBestFitFunction import linearFit
 
 
