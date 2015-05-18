@@ -24,7 +24,7 @@ def blackbody(nu, const):                                                       
     return (2*(h*(nu**3))/(c**2))*(1/(np.exp((h*(nu))/(k*TVac)) - 1))
 
 
-def dustofL(l):
+def dust(l):
     # Exponential dust function
     return (l/80.0)**(-0.42)
 
@@ -40,8 +40,8 @@ def binCenter(lBins):
     # finds the center of each bin
     out = []
     temp = [lBins[0]]
-    for i, x in enumerate(lBins[1:]):
-        temp.append(x)
+    for i, v in enumerate(lBins[1:]):
+        temp.append(v)
         out.append(0.5*(temp[i]+temp[i+1]))
     return out
 

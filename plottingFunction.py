@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 # Plotting Function
-import numpy as np
 import matplotlib.pyplot as plt
-from LinearBestFitFunction import linearFit
 
 
-def plotScatter(xAxis, yMeasured, errorYMeasured, BBofL, dustofLList, vectorA, bestFit, yTheory):
+def plotScatter(xAxis, yMeasured, errorYMeasured, BMode, dustList, fitCoeff, bestFit, yTheory):
     # Makes a scatter plot
     plt.close('all')
     # Line Plots
@@ -16,57 +14,30 @@ def plotScatter(xAxis, yMeasured, errorYMeasured, BBofL, dustofLList, vectorA, b
     plt.title("yMeasured and Best Fit Function")
 
     plt.subplot(2, 1, 2)
-    plt.plot(xAxis, [D*vectorA[0] for D in dustofLList], 'r')
-    plt.plot(xAxis, [B*vectorA[1] for B in BBofL], 'g')
+    plt.plot(xAxis, [D*fitCoeff[0] for D in dustList], 'r')
+    plt.plot(xAxis, [B*fitCoeff[1] for B in BMode], 'g')
     plt.plot(xAxis, bestFit, 'k')
     plt.plot(xAxis, yTheory, 'b')
-    plt.title(vectorA)
+    plt.title(fitCoeff)
 
     plt.savefig("lineplots.png")
 
 
-def plotBinScatter(xAxis, lBinCenters, yMeasuredBin, errorYMeasuredBin, BBofLBin, errorBBofLBin, dustofLBin, errordustofLBin, vectorABin, bestFitBin, errorBestFitBin):  # is xAxis necessary?
+def plotBinScatter(lBinCent, yMeasuredBin, errorYMeasuredBin, BModeBin, errorBModeBin, dustBin, errordustBin, fitCoeffBin, bestFitBin, errorBestFitBin):
     # Makes a scatter plot
     plt.close('all')
 
     # Measured data and best fit
     plt.subplot(2, 1, 1)
-    plt.errorbar(lBinCenters, yMeasuredBin, yerr=errorYMeasuredBin, ls='--')  # plots the mean of each bin at the center of each bin
-    plt.errorbar(lBinCenters, bestFitBin, yerr=errorBestFitBin, ls='--')  # yMplot[-1][0].set_linestyle('--')
-    plt.xticks(lBinCenters)
+    plt.errorbar(lBinCent, yMeasuredBin, yerr=errorYMeasuredBin, ls='')  # plots the mean of each bin at the center of each bin
+    plt.errorbar(lBinCent, bestFitBin, yerr=errorBestFitBin, ls='--')  # yMplot[-1][0].set_linestyle('--')
+    plt.xticks(lBinCent)
     plt.title("yMeasuredBin and bestFit")
 
     # compares best fit to adjusted values of theory
     plt.subplot(2, 1, 2)
-    plt.errorbar(lBinCenters, bestFitBin, yerr=errorBestFitBin, ls='--')
-    plt.errorbar(lBinCenters, [B*vectorABin[1] for B in BBofLBin], yerr=errorBBofLBin, ls='--')
-    plt.errorbar(lBinCenters, [D*vectorABin[0] for D in dustofLBin], yerr=errordustofLBin, ls='--')
+    plt.errorbar(lBinCent, bestFitBin, yerr=errorBestFitBin, ls='--')
+    plt.errorbar(lBinCent, [B*fitCoeffBin[1] for B in BModeBin], yerr=errorBModeBin, ls='--')
+    plt.errorbar(lBinCent, [D*fitCoeffBin[0] for D in dustBin], yerr=errordustBin, ls='--')
 
     plt.savefig("binplots.png")
-
-
-def plotCorrelation(aList, bList):
-    # Makes a correlation plot between _________________
-    plt.close('all')
-    plotFit = linearFit(aList, bList)
-    plotList = [x for x in np.arange(min(aList), max(aList), 0.1)]
-    plt.plot(aList, bList, 'bo')
-    plt.plot(plotList, [plotFit[0] + plotFit[1]*x for x in plotList], 'r-')
-    plt.title('bList by aList')
-    plt.savefig('aList by bList.png')
-
-
-def plotxListHisto(histoDataA, histoDataB):
-    # Makes a histogram of the binned lists done in the correlation plot
-    plt.close('all')
-    plt.subplot(2, 1, 1)
-    plt.bar(histoDataA[1][0:-1], histoDataA[0], histoDataA[1][1]-histoDataA[1][0])
-    plt.title('aList')
-    plt.legend('aList Binned', loc='upper right')
-
-    plt.subplot(2, 1, 2)
-    plt.bar(histoDataB[1][0:-1], histoDataB[0], histoDataB[1][1]-histoDataB[1][0])
-    plt.title('bList')
-    plt.legend('bList Binned', loc='upper right')
-
-    plt.savefig('aList, bList histograms.png')
