@@ -8,6 +8,7 @@ import fittingFunctions as fit
 should a plot of RSquare from the linearFit be made?
 '''
 
+
 def MonteCarlo(TList, measured, std, iterate=10**4):
     aList = []
     bList = []

@@ -34,7 +34,7 @@ lDict.update(lList=[l for l in range(lDict['lMin'], lDict['lMax'])]) # x axis fo
 lDict.update(lBins=range(lDict['lMin'], lDict['lMax']+lDict['lStep'], lDict['lStep'])) # list of bins
 lDict.update(lBinCent=eqn.binCenter(lDict['lBins'])) # finding bin centers
 
-# Reference dictionary of constants
+# Reference dictionary# Reference dictionary of constants of constants
 const = dict(nu1=90.0*(10**9), nu2=150.0*(10**9), nu0=1.0, h=6.62606957*(10**-34),
              c=299792458, k=1.3806488*(10**-23), TVac=2.7, TDust=19.6)
              # frequency 1, frequency 2, reference frequency, Planck's constant,
