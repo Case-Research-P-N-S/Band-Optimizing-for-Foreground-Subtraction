@@ -47,22 +47,22 @@ def binData(data, xData, xStep=[20]):
     index, binnum = 0, 0                                                      # index steps through every datapoint. binnum is current bin number
     for i in range((len(xData)-(len(xData) % xStep[binnum]))/xStep[binnum]):  # steps throu the bins
         temp = []
-        for j in range(xStep[binnum]):          # steps thru data in each bin
-            temp.append(data[index])            # appends data to temp list
-            index += 1                          # index always increases, never reset
-        binnum += 1                             # steps through the xStep for that bin
-        outList.append(np.mean(temp))           # appends average of current temp list to the outList
+        for j in range(xStep[binnum]):                                        # steps thru data in each bin
+            temp.append(data[index])                                          # appends data to temp list
+            index += 1                                                        # index always increases, never reset
+        binnum += 1                                                           # steps through the xStep for that bin
+        outList.append(np.mean(temp))                                         # appends average of current temp list to the outList
     return outList
 
 
 def binCenter(lBins):
     # finds the center of each bin
-    out = []
+    centers = []
     temp = [lBins[0]]
     for i, v in enumerate(lBins[1:]):
         temp.append(v)
-        out.append(0.5*(temp[i]+temp[i+1]))
-    return out
+        centers.append(0.5*(temp[i]+temp[i+1]))
+    return centers
 
 
 def error(data, pct=0.2, mtd=1):

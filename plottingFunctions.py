@@ -8,6 +8,7 @@ import numpy as np
 make these more general purpose functions
 '''
 
+
 def plotScatter(xAxis, Measured, BMode, Dust, bestFit, Theory):
     # Makes a scatter plot
     fig = plt.figure()

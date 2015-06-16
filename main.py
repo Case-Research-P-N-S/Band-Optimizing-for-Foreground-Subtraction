@@ -9,6 +9,7 @@ import plottingFunctions as pltfn      # handles all plotting
 from MonteCarlo import MonteCarlo      # runs the monte carlo
 from Classes import dataClass          # all the classes
 
+
 '''
 Document Info
 - Function of L
@@ -20,7 +21,7 @@ the best fit function sometimes doesn't work great if the errors are wierd
 change nu0 to a real value?
 the MonteCarlo function first does a plt.hist then passes that to a plt.bar. Change that.
     make the bins be the same as in lBins(histoDataA, histoDataB, aMean, bMean
-move the non-Equation functions out of Equations
+move the non-Equation functions out of Equations. change dataExtractor to Functions. import as fn
 dust temperature is never called should it be?
 '''
 
@@ -94,3 +95,4 @@ pltfn.plotCorrelation(aList, bList, plotFit, aMean, bMean)
 print "fitCoeff {}".format(fitCoeff)
 print "aCoeff - aMean = {}".format(DustBin.fitCoeff - aMean)
 print "bCoeff - bMean = {}".format(BModeBin.fitCoeff - bMean)
+print MeasuredBin.ls
