@@ -1,1 +1,0 @@
-Contributors:  Nathaniel Starkman, & Philip Smith
