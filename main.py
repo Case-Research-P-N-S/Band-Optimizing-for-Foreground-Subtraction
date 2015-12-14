@@ -6,184 +6,158 @@ Document Info
 - Function of L
 '''
 
-import matplotlib.pyplot as plt
+import numpy as np
 import fittingFunctions as fit         # best fit functions
-import Equations2 as eqn               # file with most of the used equations
+import ModelEquations as meqn               # file with most of the used ModelEquations
 import Functions as fn                 # file with most of the functions
 import plottingFunctions as pltfn      # handles all plotting
-# import numpy as np
-from Classes import DataClass          # all the classes
-from Dictionaries import make_lDict, make_Const  # lDict and constants
+import Dictionaries as dct             # lDict and constants
+# import lmfit as lmfit
+from Classes import ModelClass          # all the classes
 
 
-##########################################################################################
+
+###############################################################################################
                             # Files, Constants & Parameters
 
 # Files
 lamda_data_filename = 'LAMDA Data'
-measured_bin_filename = 'results.txt'
+BB_errors = 'BB_errors.txt'
 
-# making a dictionary with all the angle l values as the x-axis
-lDict = make_lDict(lamda_data_filename)
+# making a dictionary with all the l values as the x-axis
+lDict = dct.make_lDict(lamda_data_filename, lMin=50, lMax=500)
 
 # Reference dictionary of constants
-const = make_Const()
+const = dct.make_Const()
+
+# Reference dictionary of frequencies
+freqDict, freqs = dct.make_frequencies(90.e9, 150.e9, 212.e9, 242e9)
+ModelClass.freqs = freqs  # this adds the frequencies to the ModelClass
 
 # Best Fit Parameter Inputs
-params_BM = fn.npFloat([1])
-params_D = fn.npFloat([1, 0, 0])
+R = float(.01)
+params_BM = fn.npFloat([1.])
+params_D = fn.npFloat([1., 1.59])  # , 19.6   # *** Add priors ***
 parameters = fn.concatenate(params_BM, params_D)
 
 
 
-##########################################################################################
+###############################################################################################
                                       # Data
 
-# ----------------------------------------
-            # Theory Data
-# BMode
-BMode = DataClass('BMode',       {'model': 'raw',
-                                  'equation': eqn.BModeSignal,
-                                  'eqinput': fn.extractData(lamda_data_filename, 3)[lDict['refMin']:lDict['refMax']], 'params': params_BM,
-                                  'error': lambda x: fn.error(x, pct=0.2, mtd=1),
-                                  'data': fn.extractData(lamda_data_filename, 3)[lDict['refMin']:lDict['refMax']],
+#########################################
+          # Theoretical Models
+# ----------------------------
+          # BMode Model
+BMode_rawdata = fn.extractData(lamda_data_filename, 3)[lDict['refMin']:lDict['refMax']] # *** I don't think this is R=1 ***
+BMode_bindata, _ = fn.binData(BMode_rawdata, lDict['lList'], lDict['lStep'])
+BMode = ModelClass('BMode',      {'model': 'raw',
+                                  'equation': meqn.BModeSignal,
+                                  'eqinput': BMode_rawdata, 'params': params_BM,
                                   'xaxis': lDict['lList']})
 BMode.add_model(                 {'model': 'bin',
-                                  'equation': eqn.BModeSignal,  # is this the equation?
-                                  'eqinput': fn.binData(BMode.raw.data, lDict['lList'], lDict['lStep']), 'params': params_BM,
-                                  'error': lambda x: fn.error(x, pct=0.2, mtd=1),
-                                  'data': fn.binData(BMode.raw.data, lDict['lList'], lDict['lStep']),
-                                  'xaxis': lDict['lBinCent']})
+                                  'equation': meqn.BModeSignal,  # is this the equation?
+                                  'eqinput': BMode_bindata, 'params': params_BM,
+                                  'xaxis': lDict['lBinCent']},
+                                 {'model': 'realize',
+                                  'equation': meqn.BModeSignal,  # is this the equation?
+                                  'eqinput': BMode_bindata, 'params': params_BM })
+# print BMode.info # BMode._info.overwrite('10') # print BMode._info.info # print BMode.info
 
-# Dust
-Dust = DataClass('Dust',         {'model': 'raw',
-                                  'equation': eqn.dustSignal,
-                                  'eqinput': (lDict['lList'], const), 'params': params_D,
-                                  'error': lambda x: fn.error(x, pct=0.2, mtd=1),
-                                  'xaxis': lDict['lList']})
+# ----------------------------
+           # Dust Model
+Dust = ModelClass('Dust',        {'model': 'raw',
+                                  'equation': meqn.dustSignal,
+                                  'eqinput': [lDict['lList'], const, None], 'params': params_D })
 Dust.add_model(                  {'model': 'bin',
-                                  'equation': eqn.dustSignal,  # is this the equation or fn.binData?
-                                  'eqinput': (lDict['lBinCent'], const), 'params': params_D,
-                                  'data': fn.binData(Dust.raw.data, lDict['lList'], lDict['lStep']), # binning data & re-evaluating are < 1% different
-                                  'error': lambda x: fn.error(x, pct=0.2, mtd=1),
-                                  'xaxis': lDict['lBinCent']})
+                                  'equation': meqn.dustSignal,  # is this the equation or fn.binData?
+                                  'eqinput': [lDict['lBinCent'], const, None], 'params': params_D },
+                                 {'model': 'realize',
+                                  'equation': meqn.dustSignal,  # is this the equation or fn.binData?
+                                  'eqinput': [lDict['lBinCent'], const, None], 'params': params_D })
+
+# print Dust.bin.data[0], Dust.bin.data[0], Dust.add_fitdata('bin', None), Dust.finalize_fitdata('bin'), Dust.bin.fitdata[0][:,0]
 
 # Theory
-Theory = DataClass('Theory',     {'model': 'raw',
-                                  'equation': eqn.totalSignal,
-                                  'eqinput': (lDict['lList'], const, BMode.raw.data),
-                                  'params': parameters,
-                                  'data': BMode.raw.data + Dust.raw.data,  # it's faster to add than re-evaluate with the equation
-                                  'd_data': BMode.raw.d_data + Dust.raw.d_data,
-                                  'xaxis': lDict['lList']},
+realize_error = [fn.extractData(BB_errors, i) for i in range(len(freqs))]  # *** Build a better extractor ***
+Theory = ModelClass('Theory',    {'model': 'raw',
+                                  'equation': meqn.totalSignal,
+                                  'eqinput': [lDict['lList'], const, None, BMode_rawdata], 'params': parameters },
                                  {'model': 'bin',
-                                  'equation': eqn.totalSignal,
-                                  'eqinput': (lDict['lBinCent'], const, BMode.bin.data), 'params': parameters,
-                                  'data': BMode.bin.data + Dust.bin.data,  # it's faster to add than re-evaluate with the equation
-                                  'd_data': BMode.bin.d_data + Dust.bin.d_data,
-                                  'xaxis': lDict['lBinCent']},
-                                 {'model': 'rawList',
-                                  # 'equation': [BMode.raw.equation, Dust.raw.equation],
-                                  # 'params': [params_BM, params_D],
-                                  'data': [BMode.raw.data, Dust.raw.data],
-                                  'error': [BMode.raw.d_data, Dust.raw.d_data]},  # *** d_data or error?
-                                 {'model': 'binList',
-                                  # 'equation': [BMode.bin.equation, Dust.bin.equation],
-                                  # 'params': [params_BM, params_D],
-                                  'data': [BMode.bin.data, Dust.bin.data],
-                                  'error': [BMode.bin.d_data, Dust.bin.d_data]})  # *** d_data or error?
-
-# ----------------------------------------
-            # Measured Data
-# Measured
-Measured = DataClass('Measured', {'model': 'raw',
-                                  'data': fn.dudata(Theory.raw.data, 0.1),
-                                  'error': fn.extractData(measured_bin_filename, 2)[lDict['refMin']:lDict['refMax']],
-                                  'xaxis': lDict['lList']})
-Measured.add_model(              {'model': 'bin',
-                                  'data': fn.binData(Measured.raw.data, lDict['lList'], lDict['lStep']),
-                                  'error': lambda x: fn.error(x, pct=0.02, mtd=1),  # *** replace with real errors
-                                  'xaxis': lDict['lBinCent']})
-
-# ----------------------------------------
-            # Processed Data
-# Fit Coefficients
-ChiSqFit = fit.ChiSqOpt(BMode.bin, Dust.bin, Measured.bin, Theory.bin.params)
-Theory.bin.parameters, BMode.bin.params, Dust.bin.params = ChiSqFit.fit('combo', method='Nelder-Mead')  # ** retire outputs and put in a fn.updata_params?**
-print Theory.bin.parameters
-
-# Best Fit
-# BestFit = DataClass('Best Fit', {'model': 'raw', 'data': (Dust.raw.data*Dust.raw.params + BMode.raw.data*BMode.raw.params)})
-BestFit = DataClass('Best Fit')
-BestFit.add_model({'model': 'bin',  # different than Theory since parameters changed
-                   'equation': eqn.totalSignal,
-                   'eqinput': (lDict['lBinCent'], const, BMode.bin.data), 'params': Theory.bin.parameters,
-                   'error': lambda x: fn.error(x, pct=0.02, mtd=1),
-                   'xaxis': lDict['lBinCent']})
-
-# Temporary:
-BMode.raw.params, Dust.raw.params = BMode.bin.params, Dust.bin.params
-
-# Updating Fit Data & d_Fit Data
-fn.update_fitdata((BMode, 'raw', 'bin'), (Dust, 'raw', 'bin'), (Theory, 'raw', 'bin', 'rawList', 'binList'))
-fn.update_d_fitdata((BMode, 'raw', 'bin'), (Dust, 'raw', 'bin'), (Theory, 'raw', 'bin', 'rawList', 'binList'))
+                                  'equation': meqn.totalSignal,
+                                  'eqinput': [lDict['lBinCent'], const, None, BMode_bindata], 'params': parameters },
+                                 {'model': 'realize',
+                                  'equation': meqn.totalSignal,
+                                  'eqinput': [lDict['lBinCent'], const, None, (BMode_bindata*float(R))], 'params': parameters,  # *** CHANGE THIS. can't have R just here ***
+                                  'd_data': realize_error})  # *** CHANGE to 'error', but need to change how d_data calls error***
 
 
-
-##########################################################################################
+###############################################################################################
                                     # Monte Carlo
 # performing MC
-MCData = fit.MCChiSqFit(BMode.bin, Dust.bin, Theory.bin, iterate=1e3, method='Nelder-Mead')  # Monte Carlo of _________
+MCData = fit.MCChiSqFitClass(Theory.realize, Theory.realize.params, BMode.bin, Dust.bin, iterate=1000, method='nelder-mead')
+MCData.runMC()
 # plotting histograms and parameter correlations
-pltfn.plotHisto(MCData, [BMode.bin.params, Dust.bin.params])
-pltfn.plotCorrelation(MCData)
+pltfn.plotHisto(MCData, [[R], Dust.bin.params])
+pltfn.plotCorrelation(MCData, [[R], Dust.bin.params])
+# pltfn.plotMCMeasured(MCData)
+
+''' NEED TO UPDATE THE params?
+    NEED TO GET more info out of the Monte Carlo
+'''
+# # Updating Fit Data & d_Fit Data
+# fn.update_fitdata((BMode, 'raw', 'bin'), (Dust, 'raw', 'bin'), (Theory, 'raw', 'bin'))
+# fn.update_d_fitdata((BMode, 'raw', 'bin'), (Dust, 'raw', 'bin'), (Theory, 'raw', 'bin'))
 
 
-
-
-##########################################################################################
+###############################################################################################
                                     # Outputs
+
+# ----------------------------------------
+            # seeing some outputs
+print "\nparams {}".format(MCData.params)
+# print "Difference between parameters", Theory.bin.params-MCData.params
+print 'chisq:', MCData.chisq
+# print "BMode Ampl - Ampl Mean = {}".format(BMode.bin.params[0] - MCData.params[0])
+# print "Dust Ampl - Ampl Mean = {}".format(Dust.bin.params[0] - MCData.params[1])
+
+
+
+
+############################################################
+          # Realization of a Model for Graphing
+# Realization
+Theory.add_model(                {'model': 'realize1',  # *** FIX ***
+                                  'data': fn.noisyDataList(Theory.realize.fitdata[0], Theory.realize.d_fitdata[-1]),
+                                  'fitdata': fn.noisyDataList(Theory.realize.fitdata[-1], Theory.realize.d_fitdata[-1]),
+                                  'params': Theory.bin.params[:],
+                                  'd_data': realize_error })
+# This is techically in measured_log with the error from Theory.realize.d_fitdata
+
+# Fit Coefficients
+ChiSqFit = fit.ChiSqOpt(Theory.realize, Theory.realize1.params, BMode.realize, Dust.realize)
+Theory.realize1.params = ChiSqFit.fit('list', method='nelder-mead', tol=1e-4)  # *** retire outputs and put in a fn.update_params? ***
+print '\nBest Fit Parameters:', ChiSqFit.params
+print np.array(ChiSqFit.chisq)
+
+# Best Fit
+Theory.add_model(                {'model': 'grapher',
+                                  'equation': meqn.totalSignal,
+                                  'eqinput': [lDict['lBinCent'], const, None, BMode_bindata*float(R)], 'params': ChiSqFit.params[:]})
 
 # ----------------------------------------
             # Plotting Stuff
 # Fit Plots:
-pltfn.plotErrorbar(lDict['lBinCent'], Measured.bin, BMode.bin, Dust.bin, BestFit.bin, Theory.bin)
-# pltfn.plotScatter(lDict['lList'], Measured.raw, BMode.raw, Dust.raw, BestFit.raw, Theory.raw)
+for index in range(len(freqs)):
+    pltfn.plotErrorbar(lDict['lBinCent'], Theory.realize1, BMode.bin, Dust.bin, Theory.grapher, Theory.bin, index, freqs)
+pltfn.plotMeasured(Theory.realize, lDict)
+pltfn.plotBMode(BMode, lDict)
 
-# Quick Plots
-fig = plt.figure()
-plt.plot(lDict['lList'], BMode.raw.data, label='Raw')
-plt.plot(lDict['lList'], BMode.raw.fitdata, label='Fit')
-plt.legend()
-plt.title('BMode')
-fig.savefig('BMode.png')
-
-fig = plt.figure()
-plt.plot(lDict['lList'], Measured.raw.data, label='Measured.raw')
-plt.plot(lDict['lBinCent'], Measured.bin.data, label='Measured.bin')
-plt.legend()
-plt.title('Measured')
-fig.savefig('Measured.png')
-
-# ----------------------------------------
-            # seeing some outputs
-print "params {}".format([BMode.bin.params, Dust.bin.params])
-print "BMode Ampl - Ampl Mean = {}".format(BMode.bin.params[0] - MCData.params[0])
-print "Dust Ampl - Ampl Mean = {}".format(Dust.bin.params[0] - MCData.params[2])
-
-# New-Style Plots
-# figure, axis = pltfn.makePlot(lDict['lList'], Measured.raw, BestFit.raw)
-# figure2, axis2 = pltfn.makePlot(lDict['lList'], Measured.raw, BMode.raw, Dust.raw, BestFit.raw, Theory.raw)
-# pltfn.ComparePlots(axis, axis2)
 
 
 ''' NEED TO DO:
-- make Equations like Equations 2, so that can switch from Equations 2 to Equations.
-- change dust equation to something else
 - Make better best fitter for the correlation plots
-
-
-    Maybe Do:
-- make all params be in form [[BMode[:]], [Dust[:]]] rather than [BMode[:], Dust[:]]
-- Then wouldn't need paramsList in plotHisto. replace with MCData.parameters
+- Switch to lmfit
+  - ADD PRIORS (BOUNDS )
+- Set up a suite of self-plotters
 '''

@@ -6,12 +6,116 @@ import matplotlib.pyplot as plt
 from types import FunctionType, NoneType
 
 '''
-PROBLEM with _model. Can't get it to access all the data in DataClass
 '''
 
 
-class DataClass(object):
-    ''' must give a name
+########################################################################################################################
+
+class BaseMethods(object):
+    # Equality
+    def __eq__(self, other):
+        """Checks equality and inequality. Credit to Stack Exchange"""
+        if type(other) is type(self.arg):
+            return True
+        return False
+
+    def __ne__(self, other):
+        """Checks equality and inequality. Credit to Stack Exchange"""
+        return not self.__eq__(other)
+
+    def __str__(self):
+        return str(self.arg)
+
+    # Slices
+    def __getitem__(self, index):
+        return self.arg[index]
+
+    def __setitem__(self, index, value):
+        self.arg[index] = value
+
+    def __len__(self):
+        return len(self.arg)
+
+    # Math
+    # def __add__(self, other):
+    #     return self.arg + other
+    # def __sub__(self, other):
+    #     return self.arg - other
+    # def __mul__(self, other):
+    #     returns self.arg * other
+    # def __floordiv__(self, other):
+    #     return self.arg / other
+    # def __mod__(self, other):
+    #     return self.arg % other
+
+    def get(self):  # *** Should it be __get__ ? ***
+        ''' returns the isinstance.'''
+        return self.arg
+
+    def set(self, arg):
+        self.arg = arg
+
+    def index(self, value):
+        return self.arg.index(value)
+
+    def show(self):
+        print self.arg
+
+    def setandcheck(self, arg, name, checking):
+        if isinstance(arg, checking):
+            self.arg = arg
+        else:  # raise error if not right type
+            print self.name, type(arg)
+            raise TypeError('{} is not the right type'.format(name))
+
+
+class FunctionMethods(BaseMethods, object):
+    """docstring for FunctionMethods"""
+    def __call__(self, *args):
+        return self.arg.__call__(*args)
+
+    def callable(self):
+        return self.arg.__call__
+
+
+class PropertyMethods(BaseMethods, object):
+    """contains some basic homemade methods"""
+    def __call__(self):
+        ''' returns the isinstance. meant to be overwritten by a local __call__'''
+        return self.arg
+
+
+# Holds some methods for strings
+class StringClass(BaseMethods, object):
+    def __init__(self, arg):
+        self.arg = arg
+
+    def __add__(self, other):
+        if isinstance(self.arg, str):
+            return self.arg+str(other)
+        else:
+            return str(other)
+
+    def show(self):
+        print self.arg.__str__()
+
+    def append(self, arg):
+        self.arg = self.arg+str(arg)
+        return self.__str__()
+
+
+class PropertyClass(PropertyMethods, object):
+    """docstring for PropertyClass"""
+    def __init__(self, arg):
+        super(PropertyClass, self).__init__()
+        self.arg = arg
+
+
+########################################################################################################################
+
+
+class ModelClass(object):
+    ''' must pass a name as a str
         can give a model (ex raw), fullname, and info
         - all model properties must be args
         - all non-model properties must be kw
@@ -25,443 +129,407 @@ class DataClass(object):
             ex: {'model': 'modelname', 'data': [data], 'error': 2}
         - fullname, and info must be strings
     '''
+    freqs = PropertyClass(None)  # the frequency bands. Shared across all ModelClass objects
+
     def __init__(self, name, *args, **kw):
-        super(DataClass, self).__init__()
-        self.name = name
-        self.fullname = name
-        # Models
-        for i, Dict in enumerate(args):
-            self.add_model(Dict)
+        super(ModelClass, self).__init__()
+        self.name = StringClass(name)
 
         # Non-Model Properties
-        if 'fullname' in kw:                     # full name
-            self.fullname = kw.get('fullname')
-        if 'info' in kw:                         # info is any note. should be str
-            self.info = kw.get('info')
+        if 'fullname' in kw:  # full name
+            self.fullname = StringClass(kw.get('fullname'))
         else:
-            self.info = None
-
-    def add_info(self, info=None, **kw):
-        'adds info to a given model. if no info passed, adds as None'
-        if 'info' in kw:
-            self.info = kw.get('info')
+            self.fullname = StringClass(name)
+        if 'info' in kw:  # info is any note. should be str
+            self.info = StringClass(kw.get('info'))
         else:
-            self.info = info
+            self.info = StringClass(None)
 
-    def add_fullname(self, fullname=None, **kw):
-        'adds fullname to a given model. if no fullname passed, adds as None'
-        if 'fullname' in kw:
-            self.fullname = kw.get('fullname')
-        else:
-            self.fullname = fullname
+        # Models
+        # self.models = dict()
+        for arg in args:
+            self.add_model(arg)
 
-    def add_model(self, Dict, **kw):
+    def get(self, arg):
+        ''' General get argument
+        '''
+        return self.__dict__[arg]
+
+    def show(self, arg):
+        ''' General print argument
+        '''
+        print arg, ':  ', self.__dict__[arg]
+
+    def add_model(self, *Dicts):
         ''' adds a data model
-            needs: modelname (as kwarg or in main dict)
-            can be given any of: data, params, & error
-                - in main dict or in kwarg
+            needs: modelname in main dict
+            can be given any of (in dict): data, params, & error
             data must be a list
-            ex: add_model({'matProp': 'thermCond', 'name'= 'NIST', 'eq': lambda x: x, 'eqinput': [1, 23]})
-            add_model supports: data as data in dict or kwarg
-                                params as params in dict or kwarg
-                                error as error in dict or kwarg
-            kwarg has highest priority, then arg, then dict entries
+            ex: add_model({'matProp': 'thermCond', 'name':'NIST', 'eq': lambda x: x, 'eqinput': [1, 23]})
         '''
 
-        if not isinstance(Dict, (dict, NoneType)):
-            if Dict is None:
-                Dict = {}
+        for Dict in Dicts:  # gets each model in the list of models
+            if not isinstance(Dict, dict):  # checking it's a dict, else raise an error.
+                print self.name, type()
+                raise TypeError('model is not a dict')
             else:
-                print 'Error: dict needs to be type dict or None'
-                return
+                if 'model' in Dict:  # checking there is a modelname
+                    model_name = Dict['model']
+                else:
+                    raise TypeError('Error: need to pass a model name')
 
-        # Model
-        if 'model' in kw:
-            model_name = kw.get('model')
-        elif 'model' in Dict:
-            model_name = Dict['model']
-        else:
-            print 'Error: need to pass a model name'
-            return
-        if isinstance(model_name, str):
-            setattr(self, model_name, _model(self.name, model_name))  # *** temporary solution? ***
-        else:
-            print 'Error: model must be str'
-            return
+                if isinstance(model_name, str):  # checking the model name is a string
+                    setattr(self, model_name, Model(model_name, self.name, self.freqs, Dict))  # *** temporary solution? ***
+                else:
+                    print self.name, type(model_name)
+                    raise TypeError('model is not the right type')
 
+
+class Model(object):
+    ''''''
+    def __init__(self, name, upname, freqs, Dict):
+        super(Model, self).__init__()
+        self.freqs = freqs  # *** Doesn't work ***
+        self.name = StringClass(name)  # *** Temporary, need to link to main name ***
+        self.upname = upname
+        # data as equation and inputs and error
         # Equation
-        if 'equation' in kw:
-            equation = kw.get('equation')
-        elif 'equation' in Dict:
+        try:
             equation = Dict['equation']
-        else:
+        except:
             equation = None
-        if isinstance(equation, (FunctionType, NoneType, list, np.ndarray)):
-            self.add_equation(model_name, equation)
-        else:
-            print "Error: equation needs to be type function, None or list"
-            print self.name, type(equation)
-            return
+        finally:
+            self.equation = Equation(equation)
 
         # eqinput
-        if 'eqinput' in kw:
-            eqinput = kw.get('eqinput')
-        elif 'eqinput' in Dict:
+        try:
             eqinput = Dict['eqinput']
-        else:
+        except:
             eqinput = None
-        self.add_eqinput(model_name, eqinput)  # *** prob need some ifinstance() check ***
+        finally:
+            self.eqinput = Eqinput(eqinput)  # *** prob need some ifinstance() check ***
 
         # params
-        if 'params' in kw:
-            parameters = kw.get('params')
-        elif 'params' in Dict:
+        try:
             parameters = Dict['params']
-        else:
+        except:
             parameters = None
-        if isinstance(parameters, (list, np.ndarray, NoneType)):
-            self.add_params(model_name, parameters)
-        else:
-            print 'Error: params needs to be type list or None'
-            return
-
-        # Data
-        if 'data' in kw:
-            data = kw.get('data')
-        elif 'data' in Dict:
-            data = Dict['data']
-        else:
-            try:
-                data = equation(eqinput, parameters)
-            except:
-                data = None
-        if isinstance(data, (list, np.ndarray, NoneType)):
-            self.add_data(model_name, data)
-        else:
-            print 'Error: data needs to be type list or None'
-            print self.name
-            return
+        finally:
+            self.params = Parameters(parameters)
 
         # Error
-        # needs to be after eq, eqinput, params, and data since it can use those to calculate the error
-        if 'error' in kw:
-            error = kw.get('error')
-        elif 'error' in Dict:
+        try:
             error = Dict['error']
-        else:
+        except:
             error = None
-        if isinstance(error, (int, float, list, np.ndarray, FunctionType, NoneType)):
-            self.add_error(model_name, error)
-        else:
-            print 'Error: error nees to be type number, list, function or None'
-            print self.name
-            return
+        self.error = Error(error)
+
+        # Data
+        try:
+            data = Dict['data']
+        except:
+            data = None
+        self.data = Data(data, self.freqs, self.equation, self.params, self.eqinput)
 
         # Error in Data
-        if 'd_data' in kw:
-            d_data = kw.get('d_data')
-        elif 'd_data' in Dict:
+        try:
             d_data = Dict['d_data']
-        else:
+        except:
             d_data = None
-        if isinstance(d_data, (int, float, list, np.ndarray, NoneType)):
-            self.add_d_data(model_name, d_data)
-        else:
-            print 'Error: d_data nees to be type number, list, or None'
-            return
+        self.d_data = D_Data(d_data, self.freqs, self.data, self.error)
 
         # Fit Data
-        if 'fitdata' in kw:
-            fitdata = kw.get('fitdata')
-        elif 'fitdata' in Dict:
+        try:
             fitdata = Dict['fitdata']
-        else:
+        except:
             fitdata = None
-        if isinstance(fitdata, (list, np.ndarray, NoneType)):
-            self.add_fitdata(model_name, fitdata)
-        else:
-            print 'Error: fitdata needs to be type list or None'
-            print self.name
-            return
+        self.fitdata = FitData(fitdata, self.freqs, self.equation, self.eqinput, self.params, self.data)
 
         # Error in Fit Data
-        if 'd_fitdata' in kw:
-            d_fitdata = kw.get('d_fitdata')
-        elif 'd_fitdata' in Dict:
+        try:
             d_fitdata = Dict['d_fitdata']
-        else:
+        except:
             d_fitdata = None
-        if isinstance(d_fitdata, (list, np.ndarray, NoneType)):
-            self.add_d_fitdata(model_name, d_fitdata)
-        else:
-            print 'Error: d_fitdata needs to be type list or None'
-            print self.name
-            return
+        self.d_fitdata = D_Fitdata(d_fitdata, self.freqs, self.fitdata, self.error, self.d_data)
 
-        # xaxis
-        if 'xaxis' in kw:
-            xaxis = kw.get('xaxis')
-        elif 'xaxis' in Dict:
-            xaxis = Dict['xaxis']
-        else:
-            xaxis = None
-        if isinstance(xaxis, (list, np.ndarray, NoneType)):
-            self.add_xaxis(model_name, xaxis)
-        else:
-            print 'Error: xaxis nees to be type list or None'
-            print self.name
-            return
 
-    def add_equation(self, *args, **kw):
-        ''' add an equation to a model.
-            called material.add_equation(property, modelname, equation) (with either as a kwarg)
-            note: modelname must be a string
-            Cannot give something as both an arg and a kwarg!
-        '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'equation' in kw:
-            equation = kw.get('equation')
-        else:
-            equation = args[arg_count]
-            arg_count += 1
-        model.equation = equation
 
-    def add_eqinput(self, *args, **kw):
-        ''' adds equation input to a model.
-            called as material.add_params(property, modelname, params)  (with either as a kwarg)
-            Cannot give something as both an arg and a kwarg!
-        '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'eqinput' in kw:
-            eqinput = kw.get('eqinput')
-        else:
-            eqinput = args[arg_count]
-            arg_count += 1
-        model.eqinput = eqinput
+class Equation(FunctionMethods, object):
+    """docstring for Equation"""
+    def __init__(self, arg):
+        super(Equation, self).__init__()
+        self.set(arg)
 
-    def add_params(self, *args, **kw):
-        ''' adds equation input to a model.
-            called as material.add_params(property, modelname, params)  (with either as a kwarg)
-            Cannot give something as both an arg and a kwarg!
-        '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'params' in kw:
-            params = kw.get('params')
-        else:
-            params = args[arg_count]
-            arg_count += 1
-        model.params = params
+    def set(self, arg=None):
+        ''' add an equation to a model.'''
+        self.setandcheck(arg, 'equation', (FunctionType, NoneType, list, np.ndarray))
 
-    def add_error(self, *args, **kw):
-        ''' adds error equation to a model.
-            Cannot give something as both an arg and a kwarg!
-        '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'error' in kw:
-            error = kw.get('error')
-        else:
-            error = args[arg_count]
-            arg_count += 1
-        model.error = error
 
-    def add_data(self, *args, **kw):
+class Eqinput(PropertyMethods, object):
+    """adds equation input to a model equation."""
+    def __init__(self, arg):
+        super(Eqinput, self).__init__()
+        self.set(arg)
+
+    def set(self, arg=None):
+        self.setandcheck(arg, 'eqinput', (NoneType, list, np.ndarray))
+
+
+class Parameters(PropertyMethods, object):
+    """adds equation input parameters to a model equation."""
+    def __init__(self, arg):
+        super(Parameters, self).__init__()
+        self.set(arg)
+
+    def set(self, arg=None):
+        self.setandcheck(arg, 'params', (NoneType, list, np.ndarray, dict))
+
+
+class Error(FunctionMethods, object):
+    """docstring for Error"""
+    def __init__(self, arg):
+        super(Error, self).__init__()
+        self.set(arg)
+
+    def set(self, arg):
+        self.setandcheck(arg, 'error', (int, float, list, np.ndarray, FunctionType, NoneType))
+
+
+class Data(PropertyMethods, object):
+    """docstring for Data"""
+    def __init__(self, arg, freqs, equation, params, eqinput):
+        super(Data, self).__init__()
+        self.freqs = freqs
+        self.equation = equation
+        self.params = params
+        self.eqinput = eqinput
+        self.add_data(arg)
+
+    def add_data(self, data=None):
         ''' adds the data to a model.
-            called material.add_data(property, modelname, equation)  (with either as a kwarg)
-            note:  modelname must be a string
-            Cannot give something as both an arg and a kwarg!
+            data must be given as None or [[data]], where data is a list.
         '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'data' in kw:
-            data = kw.get('data')
-        else:
-            data = args[arg_count]
-            arg_count += 1
-        model.data = np.array(data)
+        # print self.eqinput[1]
 
-    def add_d_data(self, *args, **kw):
+        # Adding the Data to the Model
+        if isinstance(data, (list, np.ndarray, NoneType)):
+            # Getting all past fitdata
+            if data is None:
+                eqinput = self.eqinput  # the input to the model's equation
+                if eqinput is not None:  # checking if the model actually has an equation, otherwise it is measured data
+                    if None in eqinput:  # There is a list of frequencies to iterate through
+                        data = [[data]*len(self.freqs)]  # making iterable blank data
+                        none_index = eqinput.index(None)  # finding where to iterate the eqinput
+                        for i, freq in enumerate(self.freqs):
+                            eqinput[none_index] = freq
+                            data[0][i] = self.equation(eqinput, self.params)
+                            eqinput[none_index] = None  # IMPORTANT resetting back to None
+                    else:  # The data is frequency invariant
+                        try:  # eqinput contains the data in the final form. Never true for auto-ModelEquations
+                            data = self.equation(eqinput, self.params)
+                            data[0][0, 0]
+                        except:  # the data needs to be copied into each frequency band
+                            data = [[data]*len(self.freqs)]  # data is going to be replaced
+                            for i in range(len(self.freqs)):  # repeating data for each frequency
+                                data[0][i] = self.equation(eqinput, self.params)
+            else:  # If data is given
+                try:
+                    if len(data[0]) == len(self.freqs):  # data in final form
+                        pass
+                    else:
+                        data = [[data] * len(self.freqs)]
+                except TypeError:
+                    data = [[data] * len(self.freqs)]
+            self.arg = np.array(data)
+        else:  # raise error if not right type
+            print self.name, type(data)
+            raise TypeError('data is not the right type')
+
+
+class D_Data(PropertyMethods, object):
+    """docstring for D_Data"""
+    def __init__(self, arg, freqs, data, error):
+        super(D_Data, self).__init__()
+        self.freqs = freqs
+        self.data = data
+        self.error = error
+        self.add_d_data(arg)
+
+    def add_d_data(self, d_data=None):
         ''' adds error to the data.
             adding d_data as None makes it first try to add as model.error(model.data)
             not giving a d_data makes it first try to add as model.error(model.data) then as model.error
-            Cannot give something as both an arg and a kwarg!
         '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'd_data' in kw:
-            d_data = kw.get('d_data')
-            model.d_data = np.array(d_data)
-        else:  # d_data not a kw
-            try:  # d_data maybe arg
-                d_data = args[arg_count]
-            except:  # d_data not given anywhere
-                try:  # evaulate for the error in the data
-                    model.d_data = np.array(model.error(model.data))
-                except TypeError:  # already list, so add error in data
-                    model.d_data = np.array(model.error)
-            else:  # error is an arg
-                if d_data is None:
+        # Adding the Error to the Data
+        if isinstance(d_data, (int, float, list, np.ndarray, NoneType)):  # if same for all freqs
+            if d_data == None:
+                d_data = [[d_data]*len(self.freqs)]  # making iterable blank d_data
+                for i, freq in enumerate(self.freqs):  # iterating over the frequencies
                     try:  # evaulate for the error in the data
-                        model.d_data = np.array(model.error(model.data))
-                    except TypeError:  # already list, so add error in data
-                        model.d_data = np.array(model.error)
-                else:
-                    model.d_data = np.array(d_data)
+                        d_data[0][i] = np.array(self.error(self.data[0][i]))
+                    except:  # already list, so add error in data
+                        d_data[0][i] = np.array(self.error)
+            else:
+                if len(d_data[0]) == len(self.freqs):  # if d_data already right length
+                    pass
+                else:  # only 1 d_data is given, so it is repeated
+                    d_data = [np.array(d_data) for i in range(len(self.freqs))]
+            self.arg = np.array(d_data)
+        else:  # raise error if not right type
+            print self.name, type(d_data)
+            raise TypeError('d_data is not the right type')
 
-    def add_fitdata(self, *args, **kw):
+
+class FitData(PropertyMethods, object):
+    """docstring for D_FitData"""
+    def __init__(self, arg, freqs, equation, eqinput, params, data):
+        super(FitData, self).__init__()
+        self.arg = arg
+        self.freqs = freqs
+        self.equation = equation
+        self.eqinput = eqinput
+        self.params = params
+        self.data = data
+        self.add_fitdata(arg)
+
+    def add_fitdata(self, newfitdata=None):
         ''' adds the data, evaulated with the best fit parameters, to a model.
-            called material.add_fitdata(property, modelname, equation)  (with either as a kwarg)
+            called material.add_fitdata(property, modelname, equation)
             note:  modelname must be a string
-            Cannot give something as both an arg and a kwarg!
         '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'fitdata' in kw:
-            fitdata = kw.get('fitdata')
-            model.fitdata = np.array(fitdata)
-        else:  # fitdata not a kw
-            try:  # fitdata maybe arg
-                fitdata = args[arg_count]
-            except:  # fitdata not given anywhere
-                try:  # evaulate equation with parameters
-                    model.fitdata = np.array(model.equation(model.eqinput, model.params))
-                except:
-                    print model.name, model.modelname, 'fitdata added as None'
-                    model.fitdata = None
-            else:  # fitdata is an arg
-                if fitdata is None:
-                    try:  # evaulate equation with parameters
-                        model.fitdata = np.array(model.equation(model.eqinput, model.params))
-                    except:  # already list, so add error in data
-                        print model.name, model.modelname, 'fitdata added as None'
-                        model.fitdata = None
-                else:
-                    model.fitdata = np.array(fitdata)
+        # Adding the Fitdata
+        if isinstance(newfitdata, (list, np.ndarray, NoneType)):
+            # Getting all past fitdata
+            if self.arg == None:  # add_arg has never been called
+                self.arg = []  # starting with a blank list to add to
+            else:  # newfitdata already has entries
+                pass  # so don't need to do anything
 
-    def add_d_fitdata(self, *args, **kw):
+            if newfitdata is None:
+                eqinput = self.eqinput  # the input to the self's equation
+                if eqinput is not None:  # checking if the self actually has an equation, otherwise it is measured data
+                    if None in eqinput:  # There is a list of frequencies to iterate through
+                        newfitdata = [newfitdata]*len(self.freqs)  # making iterable blank data
+                        none_index = eqinput.index(None)  # finding where to iterate the eqinput
+                        for i, freq in enumerate(self.freqs):
+                            eqinput[none_index] = freq
+                            newfitdata[i] = self.equation(eqinput, self.params)
+                            eqinput[none_index] = None  # Important resetting back to None
+                    else:  # The data is frequency invariant
+                        print
+                        try:  # eqinput contains the data in the final form. This is never auto-called
+                            newfitdata = self.equation(eqinput, self.params)  # data generated. Is it in final form?
+                            newfitdata[0][0, 0]  # only works if the data is all np arrayed up  # *** IS THIS TRUE FOR newfitdata? ***
+                        except:  # the data needs to be copied into each frequency band
+                            newfitdata = [newfitdata]*len(self.freqs)  # newfitdata is going to be replaced
+                            for i in range(len(self.freqs)):  # repeating data for each frequency
+                                newfitdata[i] = self.equation(eqinput, self.params)
+                        else:  # if data was in right final form
+                            pass  # *** MAKE SURE IT IS IN RIGHT FORM ***
+                else:  # only called if data was given and fitdata called w/ nothing given. So copy data to fitdata
+                    newfitdata = self.data[0]
+            else:  # newfitdata was given  # *** THIS SECTION NEEDS WORK ***
+                if len(newfitdata) == len(self.freqs):  # fitdata in final form
+                    for i, val in enumerate(newfitdata):  # checking if subsections are right datatype
+                        if isinstance(val, np.ndarray):
+                            pass
+                        else:
+                            newfitdata[i] = np.array(val)
+                else:  # fitdata needs to be repeated
+                    newfitdata = [np.array(newfitdata) for i in self.freqs]
+            self.arg.append(newfitdata)
+        else:  # raise error if not right type
+            raise TypeError('newfitdata is not the right type')
+
+    def finalize_fitdata(self, model):  # *** CHANGE TO FITDATA CALL FUNCTION doing np.array(fitdata) ***
+        # Getting the Model
+        if isinstance(model, str):  # check if model string
+            model = getattr(self, model)  # getting the model
+        else:  # raise error if model not string
+            print self.name, type(model)
+            raise TypeError('model not a string')
+        model.fitdata = np.array(model.fitdata)
+
+
+class D_Fitdata(PropertyMethods, object):
+    """docstring for D_Fitdata"""
+    def __init__(self, arg, freqs, fitdata, error, d_data):
+        super(D_Fitdata, self).__init__()
+        self.arg = arg
+        self.freqs = freqs
+        self.fitdata = fitdata
+        self.error = error
+        self.d_data = d_data
+        self.add_d_fitdata(arg)
+
+    def add_d_fitdata(self, newd_fitdata=None):
         ''' adds error to fitdata.
-            Cannot give something as both an arg and a kwarg!
         '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'd_fitdata' in kw:
-            d_fitdata = kw.get('d_fitdata')
-            model.d_fitdata = np.array(d_fitdata)
-        else:  # d_fitdata not a kw
-            try:  # d_fitdata maybe arg
-                d_fitdata = args[arg_count]
-            except:  # d_fitdata not given anywhere
-                try:  # evaulate equation with parameters
-                    model.d_fitdata = np.array(model.error(model.fitdata))
-                except:
-                    print model.name, model.modelname, 'd_fitdata added as d_data'
-                    model.d_fitdata = model.d_data
-            else:  # d_fitdata is an arg
-                if d_fitdata is None:
-                    try:  # evaulate equation with parameters
-                        model.d_fitdata = np.array(model.error(model.fitdata))
-                    except:  # already list, so add error in data
-                        print model.name, model.modelname, 'd_fitdata added as d_data'
-                        model.d_fitdata = model.d_data
-                else:
-                    model.d_fitdata = np.array(d_fitdata)
+        # Adding the Error to the Data
+        if isinstance(newd_fitdata, (int, float, list, np.ndarray, NoneType)):
+            # Getting all past fitdata
+            arg = getattr(self, 'arg')
+            if arg is None:  # add_fitdata has never been called
+                self.arg = []  # starting with a blank list to add to
+            else:  # newfitdata already has entries
+                pass  # so don't need to do anything
 
-    def add_xaxis(self, *args, **kw):
-        ''' adds an axis to a model.
-            called material.add_axis(modelname, equation)  (with either as a kwarg)
-            note:  modelname must be a string
-            Cannot give something as both an arg and a kwarg!
-        '''
-        arg_count = 0
-        if 'model' in kw:
-            model = getattr(self, kw.get('model'))
-        else:
-            model = getattr(self, args[arg_count])
-            arg_count += 1
-        if 'xaxis' in kw:
-            xaxis = kw.get('xaxis')
-        else:
-            xaxis = args[arg_count]
-            arg_count += 1
-        model.xaxis = np.array(xaxis)
+            if newd_fitdata is None:
+                newd_fitdata = [newd_fitdata]*len(self.freqs)  # making iterable blank newd_fitdata
+                for i, freq in enumerate(self.freqs):  # iterating over the frequencies
+                    try:  # evaulate for the error in the data
+                        newd_fitdata[i] = self.error(self.fitdata[-1][i])
+                    except TypeError:  # already list, so add error in data
+                        if not isinstance(self.error, NoneType):
+                            newd_fitdata[i] = np.array(self.error)
+                        else:
+                            newd_fitdata[i] = np.array(self.d_data[0][i])
+                    except AttributeError:
+                        newd_fitdata[i] = np.array(self.d_data[0][i])
+            else:
+                if len(newd_fitdata) == len(self.freqs):  # if newd_fitdata already right length
+                    pass
+                else:  # only 1 newd_fitdata is given, so it is repeated
+                    newd_fitdata = [np.array(newd_fitdata) for i in range(len(self.freqs))]
+            self.arg.append(newd_fitdata)
+        else:  # raise error if not right type
+            print self.name, type(newd_fitdata)
+            raise TypeError('newd_fitdata is not the right type')
+
+    def finalize_d_fitdata(self):  # *** CHANGE TO FITDATA CALL FUNCTION doing np.array(fitdata) ***
+        self.arg = np.array(self.arg)
 
 
-class _model(DataClass):
-    ''''''
-    def __init__(self, name, modelname):  # this solution is temporary
-        # super(_model,self).__init__()
-        self.name = name                  # this solution is temporary
-        self.modelname = modelname
-        # data as equation and inputs and error
-        self.equation = None
-        self.eqinput = None
-        self.params = None
-        self.error = None
-        # original data as a list for easy access
-        self.data = None
-        self.d_data = None
-        # data evaulated with best fit parameters, as a list for easy access
-        self.fitdata = None
-        self.d_fitdata = None
-        # plotting axis
-        self.xaxis = None
+# from ModelEquations import BModeSignal
+# ModelClass.freqs = np.array([5.0])
+# test = ModelClass('name', {'model': 'raw', 'equation': BModeSignal, 'params': np.array([1.]), 'eqinput': range(20)})
+# print test.raw.data
+# test.raw.data.show()
+# test.raw.data.other.set([2])
+# print test.raw.data.other
+# print test.name, test.raw.name
+# test.raw.name.set('name2')
+# print test.name, test.raw.name
+# print test.raw.name.append('2')
+# print '1',  test.raw.equation(4)
+# test.raw.equation.set(lambda x: x**2+3)
+# print test.raw.equation(4)
+# print test.raw.equation.__call__(3)
+# test2 = test.raw.equation.callable()
+# print test2(2)
+# test4 = test.raw.equation
+# print test.raw.equation
+# print test.raw.params
+# test.raw.params.set([2])
+# print test.raw.params
+# test.raw.params.show()
 
-    def _plot(self, fig=None, ax=111, xaxis=None, **kw):  # come up with better name
-        ''' creates a plot of self.
-            can create a figure not passing any args
-            can add to an existing figure by passing a figure
-                can specify which axis with a second arg as the number
-            can add to an existing subplots py passing the fig and the axis
-        '''
-        if 'name' in kw:
-            name = kw.get('name')
-        else:
-            name = self.name  # this solution is temporary
-        if fig is None:                     # no figure given
-            fig = plt.figure()
-            ax = plt.subplot(ax)
-        elif isinstance(ax, (int, float)):  # figure given
-            ax = fig.add_subplot(ax)
-        else:                               # figure and axis give
-            pass
-        if xaxis is None:
-            xaxis = self.xaxis
-        name = ax.errorbar(xaxis, self.data, yerr=self.error, ls='-', label=name)
-        handles, labels = ax.get_legend_handles_labels()
-        ax.legend(handles, labels, loc='upper right')
-        return fig
+# test.raw.upname.set('upname')
+# test.raw.upname.show()
+# test.name.show()
+
+# if test.raw.equation == (lambda x: x**2+2):
+#     print 'y'
+
+# test.freqs = 'y'
+# print test.raw.freqs

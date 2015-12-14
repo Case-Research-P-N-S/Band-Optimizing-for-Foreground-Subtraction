@@ -10,7 +10,7 @@ from fractions import gcd
 def floor(number):
     ''' Returns the floor of a number
     '''
-    return int(number)
+    return (number-(number % (number/abs(number))))
 
 
 def ceil(number):
@@ -66,33 +66,57 @@ def LCM(numberTuple):
 
 
 def closest_square(number):
+    ''' returns the closest square and its sqrt
+    '''
     sqrt = np.sqrt(number)
     closest = int(np.round(sqrt, 0))
     square = int(np.square(closest))
     return square, closest
 
 
+def lists2Lengths(listOLists):
+    ''' returns a list of the lengths of a list of lists
+    '''
+    listLengths = []
+    for params in listOLists:
+        try:
+            length = len(params)
+        except TypeError:
+            length = 1
+        listLengths.append(length)
+    return listLengths
+
+
+def array_nest(argument, numpy=False):
+    if numpy is True:
+        return np.array([argument])
+    else:
+        return [argument]
+
+
+
+
 ##########################################################################################
                                     # Lists and Binning
 # makes list from upper and lower bounds, and a step
-def makeList(lower, upper, step=1):
+def makeList(start, stop, step=1):
     '''can make a list with float inputs
        can't make a list with upper number > ~6.5e7
     '''
     List = []
-    number = lower
+    number = start
     if isinstance(step, (int, float)):
         if step < 0:
             step = -step
-        if lower > upper:
+        if start > stop:
             step = -step
     # make it so it can accept a list here
-    if lower < upper:
-        while number < upper:
+    if start < stop:
+        while number < stop:
             List.append(number)
             number += step
-    elif lower > upper:
-        while number > upper:
+    elif start > stop:
+        while number > stop:
             List.append(number)
             number += step
     return np.array(List)
@@ -100,27 +124,41 @@ def makeList(lower, upper, step=1):
 
 # bins data
 def binData(data, xData, xStep=[20]):
-    '''averages the given data into bins of the given size
-       Note: unless xStep 1 number, assumes it works for data and xData.
+    ''' averages the given data into bins of the given size
+        It only works on 1 dimensional lists
+        Note: unless xStep 1 number, assumes it works for data and xData.
     '''
-    if isinstance(xStep, (int, float)):
-        xStep = [xStep]
-        for i in range((len(xData)-(len(xData) % xStep[0]))/xStep[0]):        # yields the floor of the division of (len(nData))/xStep
-            xStep.append(xStep[0])
-    elif len(xStep) == 1:                                                     # makes xStep a list
-        for i in range((len(xData)-(len(xData) % xStep[0]))/xStep[0]):        # yields the floor of the division of (len(nData))/xStep
-            xStep.append(xStep[0])
+    if isinstance(xStep, (int, float)) or len(xStep) == 1:
+        if isinstance(xStep, (int, float)):
+            temp, xStep = xStep, [xStep]
+        elif len(xStep) == 1:
+            temp = xStep[0]
+        for i in range(int(len(xData)/temp)-1):  # yields the floor of the division of (len(nData))/xStep
+            xStep.append(temp)
+        if len(xData) % temp != 0:  # if xStep doesn't fit evenly into len(xData)
+            xStep.append(len(xData) % temp)
+
     outList = []
-    index, binnum = 0, 0                                                      # index steps through every datapoint. binnum is current bin number
-    for i in range((len(xData)-(len(xData) % xStep[binnum]))/xStep[binnum]):  # steps thru the bins
-        temp = []
-        for j in range(xStep[binnum]):                                        # steps thru data in each bin
-            # print len(data), index
-            temp.append(data[index])                                          # appends data to temp list
-            index += 1                                                        # index always increases, never reset
-        binnum += 1                                                           # steps through the xStep for that bin
-        outList.append(np.mean(temp))                                         # appends average of current temp list to the outList
-    return np.array(outList)
+    index = 0  # index steps through every datapoint. binnum is current bin number
+    for i, Bin in enumerate(xStep):
+        temp = np.mean(data[index:(index+Bin)])
+        outList.append(temp)
+        index += Bin
+    outList = np.array(outList)
+    return outList, xStep
+
+
+def bin2Data(dataList, xData, xStep=[20]):
+    '''averages the given lists of data into lists of bins of the given size by calling binData
+       Note: unless xStep 1 number, assumes it works for data and xData.
+       dataLists are in the form [[data1, data2, data3], [data1, data2, data3]], where each dataX is a list
+    '''
+    outList = []  # the binned list
+    for i, group in enumerate(dataList):  # iterating through the groups in the list of lists of data
+        outList.append([])
+        for j, data in enumerate(group):  # iterating through the lists of data
+            outList[i].append(binData(data, xData, xStep)[0])  # binning the data
+    return outList
 
 
 # Centers of Bins
@@ -138,18 +176,48 @@ def binCenter(lBins):
 def parameterSplit(parameters):
     ''' This function splits the list of parameters into the BMode and Dust sections
     '''
-    params_BM = np.array(parameters[0])
-    params_D = np.array(parameters[1:])
+    # BMode
+    try:
+        len(parameters[0])
+    except:
+        params_BM = [parameters[0]]
+    else:
+        params_BM = parameters[0]
+    finally:
+        params_BM = np.array(params_BM)
+    # Dust
+    try:
+        len(parameters[1:])
+    except:
+        params_D = [parameters[1:]]
+    else:
+        params_D = parameters[1:]
+    finally:
+        params_D = np.array(params_D)
     return params_BM, params_D
 
 
 ##########################################################################################
                                     # Generating Data
-def dudata(data, pct):
-    ''' makes dud data
+
+def noisyDataList(datalist, error):
+    ''' (datalist, error)
+        This function adds noise to the data, which is a list of lists
+        the error can be a list
     '''
-    noisydata = [np.random.normal(T, abs(T*pct)) for T in data]
-    return np.array(noisydata)
+    noisydata = []
+    for i, data in enumerate(datalist):
+        noisydata.append([np.random.normal(m, err) for m, err in zip(data, error[i])])
+    return noisydata
+
+
+def noisyData(datalist, error):
+    ''' (datalist, error)
+        This function adds noise to the data, which is a list of lists
+        the error can be a list
+    '''
+    noisydata = [np.random.normal(m, err) for m, err in zip(datalist, error)]
+    return noisydata
 
 
 def error(data, pct=0.02, mtd=1):
@@ -160,7 +228,8 @@ def error(data, pct=0.02, mtd=1):
     elif mtd == 3:
         error = [pct*data[int(d)] for d in data]
     # else:         # make it so that it can take a user given function
-    return np.array(error)
+    error = np.array(error)
+    return error
 
 
 # Data extractor
@@ -175,41 +244,13 @@ def extractData(filename, columnNumber=3):
 
 ##########################################################################################
                                     # Updating Data
-def update_fitdata(*args):
+
+def update(method, *args):
     '''
+        Give the method as a string
         arguments must be a tuple with the object and the modelname
         ex ((Dust, 'bin'), (Dust, 'raw'))
     '''
     for argument in args:
         for val in argument[1:]:
-            argument[0].add_fitdata(val, None)
-
-
-def update_d_fitdata(*args):
-    '''
-        arguments must be a tuple with the object and the modelname
-        ex ((Dust, 'bin'), (Dust, 'raw'))
-    '''
-    for argument in args:
-        for val in argument[1:]:
-            argument[0].add_d_fitdata(val, None)
-
-
-# def data(function, func_input, iterator, mtd=1, ind_var=0):
-#     ''' Generates Data by evaluation a function over a an iterator
-#         function: the function to be evaluated
-#             must have only one input. Input must be a tuple
-#             independent variable must be the first input
-#         func_input: a tuple containing the inputs to the function
-#             must contain the independent variable
-#             independent variable is assumed to be first in tuple unless otherwise stated in "ind_var"
-#         iterator: the list over which the function is evaluated
-#         mtd: selects which method to use
-#         ind_var: specifies location of independent variable in func_input
-#     '''
-#     if mtd == 1:
-#         data = [function(func_input) for func_input[ind_var] in iterator]
-#     else:
-#         print 'Error: section in development'
-#         return
-#     return data
+            getattr(getattr(getattr(argument[0], val), method), 'add_{}'.format(method))(None)

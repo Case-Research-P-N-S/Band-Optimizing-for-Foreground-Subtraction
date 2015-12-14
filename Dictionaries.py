@@ -19,7 +19,7 @@ def make_lDict(filename=None, **kw):
 
     # data List
     if 'dataList' in kw:  # if given the dataList
-        dataList = kw.get('lList')
+        dataList = kw.get('dataList')
     elif 'file' in kw:  # if not given dataList, but given kwarg filename
         dataList = np.array([int(x) for x in fn.extractData(kw.get('file'), 0)])
     elif filename is not None:  # if no dataList, no kwarg filename, but filename argument
@@ -52,7 +52,7 @@ def make_lDict(filename=None, **kw):
     if 'lMin' in kw:
         lMin = kw.get('lMin')
     else:
-        lMin = 40
+        lMin = 50
     # floor of lMin, incase lMin is not an integer
     if 'refMin' in kw:
         refMin = kw.get('refMin')
@@ -62,7 +62,7 @@ def make_lDict(filename=None, **kw):
     if 'lMax' in kw:
         lMax = kw.get('lMax')
     else:
-        lMax = 400
+        lMax = 500
     # floor of lMax, incase lMax is not an integer
     if 'refMax' in kw:
         refMax = kw.get('refMax')
@@ -122,7 +122,6 @@ def make_lDict(filename=None, **kw):
     return lDict
 
 
-
 ##########################################################################################
                                     # Constants
 
@@ -130,18 +129,18 @@ def make_Const(**kw):
     ''' Reference dictionary of constants
         If no inputs given, comes prepopulated with standard values
     '''
-    if 'nu1' in kw:
-        nu1 = np.float64(kw.get('nu1'))
-    else:
-        nu1 = np.float64(90.0*(10**9))
-    if 'nu2' in kw:
-        nu2 = np.float64(kw.get('nu2'))
-    else:
-        nu2 = np.float64(150.0*(10**9))
+    # if 'nu1' in kw:
+    #     nu1 = np.float64(kw.get('nu1'))
+    # else:
+    #     nu1 = np.float64(90.0*(10**9))
+    # if 'nu2' in kw:
+    #     nu2 = np.float64(kw.get('nu2'))
+    # else:
+    #     nu2 = np.float64(150.0*(10**9))
     if 'nu0' in kw:
         nu0 = np.float64(kw.get('nu0'))
     else:
-        nu0 = np.float64(1.0)
+        nu0 = np.float64(220.)
     if 'h' in kw:
         h = np.float64(kw.get('h'))
     else:
@@ -149,29 +148,47 @@ def make_Const(**kw):
     if 'c' in kw:
         c = np.float64(kw.get('c'))
     else:
-        c = np.float64(299792458)
+        c = np.float64(299792458.)
     if 'k' in kw:
         k = np.float64(kw.get('k'))
     else:
         k = np.float64(1.3806488*(10**-23))
-    if 'TVac' in kw:
-        TVac = np.float64(kw.get('TVac'))
+    if 'Tcmb' in kw:
+        Tcmb = np.float64(kw.get('Tcmb'))
     else:
-        TVac = np.float64(2.7)
+        Tcmb = np.float64(2.7)
     if 'TDust' in kw:
         TDust = np.float64(kw.get('TDust'))
     else:
         TDust = np.float64(19.6)
 
     constants = {
-             'nu1': nu1,      # frequency 1
-             'nu2': nu2,      # frequency 2
+             # 'nu1': nu1,      # frequency 1
+             # 'nu2': nu2,      # frequency 2
              'nu0': nu0,      # reference frequency
              'h': h,          # Planck's constant
              'c': c,          # speed of light
              'k': k,          # Boltzmann constant
-             'TVac': TVac,    # vacuum temp
+             'Tcmb': Tcmb,    # vacuum temp
              'TDust': TDust,  # dust temp
-             'List': [h, c, k, TVac, TDust]
+             'List': [h, c, k, Tcmb, TDust]
             }
     return constants
+
+
+
+##########################################################################################
+                                    # Frequencies
+def make_frequencies(*args, **kw):
+    ''' Reference dictionary of constants
+        If no inputs given, comes prepopulated with standard values
+    '''
+    freqs_Dict = {}
+    freqs = []
+    for index, value in enumerate(args):
+        freqs_Dict['nu{}'.format(index+1)] = value
+        freqs.append(value)
+    for value, key in enumerate(kw):
+        freqs_Dict[key] = value
+        freqs.append(value)
+    return freqs_Dict, freqs
